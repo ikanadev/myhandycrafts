@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=myhandycrafts
+POSTGRES_USER=TRlqcAiJcQtTPKbXakOmSLyXfZsOXuqk
+POSTGRES_PASSWORD=XA7DUUCqMcFmOCORWrBhv4BEjDwONA77lq8Sxr8r7mVVSo1Wo676si7YwhraONq3
