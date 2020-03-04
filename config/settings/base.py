@@ -75,6 +75,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "myhandycrafts.users.apps.UsersConfig",
+    "myhandycrafts.categories.apps.CategoriesConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -293,6 +294,7 @@ SOCIALACCOUNT_ADAPTER = "myhandycrafts.users.adapters.SocialAccountAdapter"
 # https://django-compressor.readthedocs.io/en/latest/quickstart/#installation
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
+
 
 # Your stuff...
 # ------------------------------------------------------------------------------
