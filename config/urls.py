@@ -4,11 +4,19 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path('',include(('myhandycrafts.users.urls','users'),namespace='users')),
+
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     # path(
