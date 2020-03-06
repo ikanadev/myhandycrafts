@@ -4,6 +4,9 @@ Base settings to build other settings files upon.
 
 import environ
 
+from datetime import timedelta
+
+
 ROOT_DIR = (
     environ.Path(__file__) - 3
 )  # (myhandycrafts/config/settings/base.py - 3 = myhandycrafts/)
@@ -307,3 +310,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+
+ACCESS_TOKEN_LIFETIME = timedelta(minutes=5)
+REFRESH_TOKEN_LIFETIME = timedelta(days=1)
+

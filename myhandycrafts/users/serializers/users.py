@@ -10,8 +10,24 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 # Models
-from myhandycrafts.users.models import User,Profile
+from myhandycrafts.users.models import User,Profile,UserTemporalPassword
 from django.utils.translation import ugettext_lazy as _
+
+
+# Utilities
+from myhandycrafts.utils.token import get_response_token
+
+# Utils
+import random
+import string
+import hashlib
+
+
+# Email
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+
+
 
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer."""
@@ -56,4 +72,55 @@ class UserLoginSerializer(serializers.Serializer):
 
 
     def get_token(self):
-        return "token"
+        """Return  response toke. """
+        return get_response_token(self.context['user'].id)
+
+
+class UserTemporalPasswordSendSerializer(serializers.Serializer):
+    """User temporal password send email with temporal password."""
+    email = serializers.EmailField()
+    def validate_email(self,data):
+        """Verify email valid."""
+        try:
+            user = User.objects.get(email=data)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("This email is not relationated with any account.")
+        self.context['user']=user
+        return data
+
+    def save(self):
+        """Send Mail with temporal password."""
+        user = self.context['user']
+        password_temporal = self.get_temporar_password()
+        UserTemporalPassword.objects.create(
+            user=user,
+            password=hashlib.sha256(password_temporal.encode('utf-8')).hexdigest()
+        )
+        self.send_email(password_temporal)
+
+    def get_temporar_password(self):
+        """Return password hash"""
+        letters = string.ascii_lowercase
+        temp = ''.join(random.choice(letters) for i in range(10))
+        return  hashlib.md5(temp.encode('utf-8')).hexdigest()[3:7] + "x1"
+
+
+    def send_email(self,password_temporal):
+        """Send email with temporal passoword."""
+        user = self.context['user']
+
+        subject = 'Estimado {} {}! has solicitado recuperar tu contraseña'.format(
+            user.first_name,
+            user.last_name
+        )
+        from_email = 'My HandyCrafts <noreply@comparteride.com>'
+        content = render_to_string(
+            'email/user_temporal_password.html',
+            {'password': password_temporal, 'user': user}
+        )
+        print(password_temporal)
+        msg = EmailMultiAlternatives(subject, content, from_email, [user.email])
+        msg.attach_alternative(content, "text/html")
+        msg.send()
+
+
