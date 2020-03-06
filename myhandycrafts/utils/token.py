@@ -23,7 +23,7 @@ def get_token(user):
     refresh_token['email'] = user.email
     return refresh_token
 
-def get_response_token(user_pk):  # login
+def get_response_token(user_pk,reset_password):  # login
 
     user = User.objects.get(pk=user_pk)
     refresh = get_token(user)
@@ -34,7 +34,7 @@ def get_response_token(user_pk):  # login
     response = {
         'access_token': str(access),  # access_token,
         'refresh_token': str(refresh),  # refresh_token,
-        'reset_token': None,
+        'reset_password': reset_password,
         'token_type': "bearer"
     }
 

@@ -22,6 +22,9 @@ import random
 import string
 import hashlib
 
+from datetime import datetime,timedelta
+
+
 
 # Email
 from django.template.loader import render_to_string
@@ -54,12 +57,29 @@ class UserLoginSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=6,max_length=64)
 
     def validate(self,data):
-        user=authenticate(username=data['email'],password=data['password'])
+        self.context['reset_password'] = False
+        email=data['email']
+        password=data['password']
+        user=authenticate(username=email,password=password)
         if not user:
-            raise serializers.ValidationError(_('Invalid Credential.'))
+            try:
+                user = User.objects.get(email=email)
+                user_auth = UserTemporalPassword.objects.get(
+                    user=user,
+                    password=hashlib.sha256(password.encode('utf-8')).hexdigest(),
+                    created_at__gte=datetime.now() - timedelta(minutes=60)
+                ).user
+                self.context['reset_password'] = True
+                user.is_active = True
+                user.save()
+            except (UserTemporalPassword.DoesNotExist, User.DoesNotExist):
+                raise serializers.ValidationError('Invalid Credential.')
 
         if not user.is_verified:
             raise serializers.ValidationError(_('Acount is not active'))
+
+
+
 
         self.context['user']=user
         return data
@@ -73,7 +93,10 @@ class UserLoginSerializer(serializers.Serializer):
 
     def get_token(self):
         """Return  response toke. """
-        return get_response_token(self.context['user'].id)
+        return get_response_token(
+            self.context['user'].id,
+            self.context['reset_password']
+        )
 
 
 class UserTemporalPasswordSendSerializer(serializers.Serializer):
