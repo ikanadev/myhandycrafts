@@ -147,3 +147,24 @@ class UserTemporalPasswordSendSerializer(serializers.Serializer):
         msg.send()
 
 
+
+class UserUpdatePasswordSerializer(serializers.Serializer):
+    """ User update his password."""
+    password = serializers.CharField(min_length=6)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate_password(self,data):
+        return data
+
+
+    def create(self, data):
+        user = data['user']
+        new_password = data['password']
+        user.set_password(new_password)
+        user.save()
+        return data
+
+
+
+
+
