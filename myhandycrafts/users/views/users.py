@@ -15,7 +15,8 @@ from rest_framework.permissions import (
 from myhandycrafts.users.serializers import (
     UserModelSerializer,
     UserLoginSerializer,
-    UserTemporalPasswordSendSerializer
+    UserTemporalPasswordSendSerializer,
+    UserUpdatePasswordSerializer
 )
 
 # Models
@@ -23,10 +24,16 @@ from myhandycrafts.users.serializers import (
 from myhandycrafts.users.models import User
 
 
-class UserViewSet(viewsets.GenericViewSet):
+class UserViewSet(mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  viewsets.GenericViewSet):
     """User vies set.
     Handle sing up, log in, and account verification.
     """
+
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    lookup_field = 'username'
 
     def get_permissions(self):
         """Assing permission based on actions."""
@@ -48,7 +55,7 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(data, status=status.HTTP_200_OK)
 
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False,methods=['post'])
     def recovery(self, request):
         serializer = UserTemporalPasswordSendSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -57,3 +64,19 @@ class UserViewSet(viewsets.GenericViewSet):
             'success':True,
         }
         return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False ,methods=['post'])
+    def updatepassword(self,request):
+
+        serializer = UserUpdatePasswordSerializer(
+            data=request.data,
+            context={'request':request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data={
+            'success':True
+        }
+        return Response(data,status=status.HTTP_200_OK)
+
+
