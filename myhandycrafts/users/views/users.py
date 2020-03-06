@@ -14,7 +14,8 @@ from rest_framework.permissions import (
 # Serializers
 from myhandycrafts.users.serializers import (
     UserModelSerializer,
-    UserLoginSerializer
+    UserLoginSerializer,
+    UserTemporalPasswordSendSerializer
 )
 
 # Models
@@ -29,7 +30,7 @@ class UserViewSet(viewsets.GenericViewSet):
 
     def get_permissions(self):
         """Assing permission based on actions."""
-        if self.action in ['login']:
+        if self.action in ['login','recovery']:
             permissions = [AllowAny]
         else:
             permissions = [IsAuthenticated]
@@ -43,5 +44,16 @@ class UserViewSet(viewsets.GenericViewSet):
         data = {
             'user': UserModelSerializer(user).data,
             'access_token': token,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+
+    @action(detail=False, methods=['post'])
+    def recovery(self, request):
+        serializer = UserTemporalPasswordSendSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = {
+            'success':True,
         }
         return Response(data, status=status.HTTP_200_OK)
