@@ -2,17 +2,18 @@
 
 # Django
 from django.conf import settings
-from django.contrib.auth import password_validation,authenticate
+from django.contrib.auth import password_validation, authenticate
 from django.core.validators import RegexValidator
+from django.contrib.auth.hashers import make_password
 
 # Django REST Framework
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 # Models
-from myhandycrafts.users.models import User,Profile,UserTemporalPassword
+from myhandycrafts.users.models import User, Profile, UserTemporalPassword
+from myhandycrafts.categories.models import Category
 from django.utils.translation import ugettext_lazy as _
-
 
 # Utilities
 from myhandycrafts.utils.token import get_response_token
@@ -21,9 +22,10 @@ from myhandycrafts.utils.token import get_response_token
 import random
 import string
 import hashlib
+from datetime import datetime, timedelta
 
-from datetime import datetime,timedelta
-
+# Serializer
+from myhandycrafts.users.serializers.profiles import ProfileModelSerializer
 
 
 # Email
@@ -31,19 +33,19 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 
 
-
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer."""
-    # profile=ProfileModelSerializer(read_only=True)
+
+    profile=ProfileModelSerializer(read_only=True)
 
     class Meta:
-        model=User
-        fields=(
+        model = User
+        fields = (
             'username',
             'first_name',
             'last_name',
             'email',
-            # 'profile',
+            'profile',
         )
 
 
@@ -54,13 +56,13 @@ class UserLoginSerializer(serializers.Serializer):
     """
 
     email = serializers.EmailField()
-    password = serializers.CharField(min_length=6,max_length=64)
+    password = serializers.CharField(min_length=6, max_length=64)
 
-    def validate(self,data):
+    def validate(self, data):
         self.context['reset_password'] = False
-        email=data['email']
-        password=data['password']
-        user=authenticate(username=email,password=password)
+        email = data['email']
+        password = data['password']
+        user = authenticate(username=email, password=password)
         if not user:
             try:
                 user = User.objects.get(email=email)
@@ -78,18 +80,13 @@ class UserLoginSerializer(serializers.Serializer):
         if not user.is_verified:
             raise serializers.ValidationError(_('Acount is not active'))
 
-
-
-
-        self.context['user']=user
+        self.context['user'] = user
         return data
 
-
-    def create(self,data):
+    def create(self, data):
         """Generate token login."""
         token = self.get_token()
-        return self.context['user'],token
-
+        return self.context['user'], token
 
     def get_token(self):
         """Return  response toke. """
@@ -102,13 +99,14 @@ class UserLoginSerializer(serializers.Serializer):
 class UserTemporalPasswordSendSerializer(serializers.Serializer):
     """User temporal password send email with temporal password."""
     email = serializers.EmailField()
-    def validate_email(self,data):
+
+    def validate_email(self, data):
         """Verify email valid."""
         try:
             user = User.objects.get(email=data)
         except User.DoesNotExist:
             raise serializers.ValidationError("This email is not relationated with any account.")
-        self.context['user']=user
+        self.context['user'] = user
         return data
 
     def save(self):
@@ -125,10 +123,9 @@ class UserTemporalPasswordSendSerializer(serializers.Serializer):
         """Return password hash"""
         letters = string.ascii_lowercase
         temp = ''.join(random.choice(letters) for i in range(10))
-        return  hashlib.md5(temp.encode('utf-8')).hexdigest()[3:7] + "x1"
+        return hashlib.md5(temp.encode('utf-8')).hexdigest()[3:7] + "x1"
 
-
-    def send_email(self,password_temporal):
+    def send_email(self, password_temporal):
         """Send email with temporal passoword."""
         user = self.context['user']
 
@@ -147,15 +144,13 @@ class UserTemporalPasswordSendSerializer(serializers.Serializer):
         msg.send()
 
 
-
 class UserUpdatePasswordSerializer(serializers.Serializer):
     """ User update his password."""
     password = serializers.CharField(min_length=6)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-    def validate_password(self,data):
+    def validate_password(self, data):
         return data
-
 
     def create(self, data):
         user = data['user']
@@ -165,6 +160,114 @@ class UserUpdatePasswordSerializer(serializers.Serializer):
         return data
 
 
+class UserSignUpSerializer(serializers.Serializer):
+    """User sign up serializer.
 
+    Handle the register for new user.
+    """
 
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    username = serializers.CharField(
+        min_length=4,
+        max_length=20,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
 
+    password = serializers.CharField(min_length=6, max_length=64)
+
+    # Name
+    first_name = serializers.CharField(min_length=2, max_length=30)
+    last_name = serializers.CharField(min_length=2, max_length=30)
+
+    # ## profile ================
+    # picture = serializers.ImageField(
+    #     'profile picture',
+    #     upload_to='users/pictures/',
+    #     blank=True,
+    #     null=True
+    # )
+    biography = serializers.CharField(max_length=500,allow_blank=True)
+
+    ci = serializers.CharField(
+        max_length=30,
+        validators=[UniqueValidator(queryset=Profile.objects.all())]
+    )
+
+    birth_date = serializers.DateField()
+
+    address = serializers.CharField(max_length=256,allow_blank=True)
+
+    # Category
+    category = serializers.IntegerField()
+
+    # Company information
+    nit = serializers.CharField(max_length=30,allow_blank=True)
+    nit_bussiness_name = serializers.CharField(max_length=512,allow_blank=True)
+    nit_is_active = serializers.BooleanField(default=False)
+
+    # Contact Information User
+    phone_regex = RegexValidator(
+        regex=r'\+?1?\d{6,15}$',
+        message="Phone number must be entered in the format: +999999999. Up to 15 digits allowed."
+    )
+    phone_number = serializers.CharField(validators=[phone_regex], max_length=17)
+    website = serializers.CharField(max_length=128,allow_blank=True)
+    has_wattsapp = serializers.BooleanField()
+    has_facebook = serializers.BooleanField()
+    addres_facebook = serializers.CharField(max_length=512,allow_blank=True)
+
+    # stats
+    # reputation = serializers.FloatField(
+    #     default=5.0,
+    #     help_text="User's reputation based on crafts."
+    # )
+    # publications = models.PositiveIntegerField(default=0)
+    # requests = models.PositiveIntegerField(default=0)
+    # stores = models.PositiveIntegerField(default=0)
+    # participation_in_fairs = models.PositiveIntegerField(default=0)
+
+    def validate_category(self, data):
+        try:
+            category=Category.objects.get(pk=data)
+        except Category.DoesNotExist:
+            raise serializers.ValidationError('Category not valid')
+        self.context['category']=category
+        return data
+
+    def create(self,data):
+        creator_user_id = self.context['request'].user.pk
+        user=User.objects.create(
+            email=data['email'],
+            username=data['username'],
+            password=make_password(data['password']),
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            type_user='B',
+            is_verified=True,
+            is_active=True,
+            is_craftsman=True,
+            created_by=creator_user_id,
+            is_staff=False
+        )
+
+        data.pop('email')
+        data.pop('username')
+        data.pop('password')
+        data.pop('first_name')
+        data.pop('last_name')
+        data.pop('category')
+
+        Profile.objects.create(
+            **data,
+            user=user,
+            category=self.context['category'],
+            created_by=creator_user_id
+        )
+        self.send_activation_account(user)
+        return user
+
+    def send_activation_account(self,user):
+        print('sending email activation account')
+        pass
