@@ -10,18 +10,21 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated
 )
+from myhandycrafts.users.permissions import IsAdmin
 
 # Serializers
 from myhandycrafts.users.serializers import (
     UserModelSerializer,
     UserLoginSerializer,
     UserTemporalPasswordSendSerializer,
-    UserUpdatePasswordSerializer
+    UserUpdatePasswordSerializer,
+    UserSignUpSerializer,
 )
 
 # Models
-
 from myhandycrafts.users.models import User
+
+
 
 
 class UserViewSet(mixins.RetrieveModelMixin,
@@ -39,8 +42,10 @@ class UserViewSet(mixins.RetrieveModelMixin,
         """Assing permission based on actions."""
         if self.action in ['login','recovery']:
             permissions = [AllowAny]
+        elif self.action in ['register']:
+            permissions = [IsAuthenticated,IsAdmin]
         else:
-            permissions = [IsAuthenticated]
+             permissions = [IsAuthenticated]
         return [p() for p in permissions]
 
     @action(detail=False, methods=['post'])
@@ -61,13 +66,12 @@ class UserViewSet(mixins.RetrieveModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {
-            'success':True,
+            'status':1
         }
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False ,methods=['post'])
     def updatepassword(self,request):
-
         serializer = UserUpdatePasswordSerializer(
             data=request.data,
             context={'request':request}
@@ -75,8 +79,21 @@ class UserViewSet(mixins.RetrieveModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data={
-            'success':True
+            'status':1
         }
         return Response(data,status=status.HTTP_200_OK)
 
+    @action(detail=False,methods=['post'])
+    def register(self,request):
+        serializer = UserSignUpSerializer(
+            data=request.data,
+            context={'request':request}
+        )
+        serializer.is_valid(raise_exception=True)
+        user =serializer.save()
+        data = {
+            'state': 1,
+            'data': UserModelSerializer(user).data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
