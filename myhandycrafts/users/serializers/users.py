@@ -1,42 +1,47 @@
 """User Serializers."""
 
+import hashlib
+# Utils
+import random
+import string
+from datetime import datetime, timedelta
+
 # Django
-from django.conf import settings
-from django.contrib.auth import password_validation, authenticate
-from django.core.validators import RegexValidator
+from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
+from django.core.mail import EmailMultiAlternatives
+from django.core.validators import RegexValidator
+
+# Email
+from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 
 # Django REST Framework
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
+from myhandycrafts.categories.models import Category
 # Models
 from myhandycrafts.users.models import User, Profile, UserTemporalPassword
-from myhandycrafts.categories.models import Category
-from django.utils.translation import ugettext_lazy as _
-
+# Serializer
+from myhandycrafts.users.serializers.profiles import (
+ProfileModelSerializer,
+ProfilePublicModelSerializer
+)
 # Utilities
 from myhandycrafts.utils.token import get_response_token
 
-# Utils
-import random
-import string
-import hashlib
-from datetime import datetime, timedelta
-
-# Serializer
-from myhandycrafts.users.serializers.profiles import ProfileModelSerializer
 
 
-# Email
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
+
+
+
 
 
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer."""
 
-    profile=ProfileModelSerializer(read_only=True)
+    profile = ProfileModelSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -167,12 +172,12 @@ class UserSignUpSerializer(serializers.Serializer):
     """
 
     email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[UniqueValidator(queryset=User.objects.filter(is_deleted=False))]
     )
     username = serializers.CharField(
         min_length=4,
         max_length=20,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[UniqueValidator(queryset=User.objects.filter(is_deleted=False))]
     )
 
     password = serializers.CharField(min_length=6, max_length=64)
@@ -188,7 +193,7 @@ class UserSignUpSerializer(serializers.Serializer):
     #     blank=True,
     #     null=True
     # )
-    biography = serializers.CharField(max_length=500,allow_blank=True)
+    biography = serializers.CharField(max_length=500, allow_blank=True)
 
     ci = serializers.CharField(
         max_length=30,
@@ -197,14 +202,14 @@ class UserSignUpSerializer(serializers.Serializer):
 
     birth_date = serializers.DateField()
 
-    address = serializers.CharField(max_length=256,allow_blank=True)
+    address = serializers.CharField(max_length=256, allow_blank=True)
 
     # Category
     category = serializers.IntegerField()
 
     # Company information
-    nit = serializers.CharField(max_length=30,allow_blank=True)
-    nit_bussiness_name = serializers.CharField(max_length=512,allow_blank=True)
+    nit = serializers.CharField(max_length=30, allow_blank=True)
+    nit_bussiness_name = serializers.CharField(max_length=512, allow_blank=True)
     nit_is_active = serializers.BooleanField(default=False)
 
     # Contact Information User
@@ -213,10 +218,10 @@ class UserSignUpSerializer(serializers.Serializer):
         message="Phone number must be entered in the format: +999999999. Up to 15 digits allowed."
     )
     phone_number = serializers.CharField(validators=[phone_regex], max_length=17)
-    website = serializers.CharField(max_length=128,allow_blank=True)
+    website = serializers.CharField(max_length=128, allow_blank=True)
     has_wattsapp = serializers.BooleanField()
     has_facebook = serializers.BooleanField()
-    addres_facebook = serializers.CharField(max_length=512,allow_blank=True)
+    addres_facebook = serializers.CharField(max_length=512, allow_blank=True)
 
     # stats
     # reputation = serializers.FloatField(
@@ -230,15 +235,15 @@ class UserSignUpSerializer(serializers.Serializer):
 
     def validate_category(self, data):
         try:
-            category=Category.objects.get(pk=data)
+            category = Category.objects.get(pk=data)
         except Category.DoesNotExist:
             raise serializers.ValidationError('Category not valid')
-        self.context['category']=category
+        self.context['category'] = category
         return data
 
-    def create(self,data):
+    def create(self, data):
         creator_user_id = self.context['request'].user.pk
-        user=User.objects.create(
+        user = User.objects.create(
             email=data['email'],
             username=data['username'],
             password=make_password(data['password']),
@@ -268,6 +273,102 @@ class UserSignUpSerializer(serializers.Serializer):
         self.send_activation_account(user)
         return user
 
-    def send_activation_account(self,user):
+    def send_activation_account(self, user):
         print('sending email activation account')
         pass
+
+
+
+class UserProfilePublicSerializer(serializers.ModelSerializer):
+    """User model serializer."""
+
+    profile = ProfilePublicModelSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'profile',
+        )
+
+
+class UserUpdateModelSerializer(serializers.Serializer):
+    """User Update model serializer.
+    Handle the register for new user.
+    """
+
+    # Name
+    first_name = serializers.CharField(min_length=2, max_length=30)
+    last_name = serializers.CharField(min_length=2, max_length=30)
+
+    biography = serializers.CharField(max_length=500, allow_blank=True)
+
+    ci = serializers.CharField(
+        max_length=30,
+        validators=[UniqueValidator(queryset=Profile.objects.all())]
+    )
+
+    birth_date = serializers.DateField()
+
+    address = serializers.CharField(max_length=256, allow_blank=True)
+
+    # Category
+    category = serializers.IntegerField()
+
+    # Company information
+    nit = serializers.CharField(max_length=30, allow_blank=True)
+    nit_bussiness_name = serializers.CharField(max_length=512, allow_blank=True)
+    nit_is_active = serializers.BooleanField(default=False)
+
+    # Contact Information User
+    phone_regex = RegexValidator(
+        regex=r'\+?1?\d{6,15}$',
+        message="Phone number must be entered in the format: +999999999. Up to 15 digits allowed."
+    )
+    phone_number = serializers.CharField(validators=[phone_regex], max_length=17)
+    website = serializers.CharField(max_length=128, allow_blank=True)
+    has_wattsapp = serializers.BooleanField()
+    has_facebook = serializers.BooleanField()
+    addres_facebook = serializers.CharField(max_length=512, allow_blank=True)
+
+
+    def validate_category(self, data):
+        try:
+            category = Category.objects.get(pk=data)
+        except Category.DoesNotExist:
+            raise serializers.ValidationError('Category not valid')
+        self.context['category'] = category
+        return data
+
+    def update(self, instance, data):
+        user_attr =['first_name','last_name',]
+        profile_attr=[
+            "biography",
+            "ci",
+            "birth_date",
+            "address",
+            "nit",
+            "nit_bussiness_name",
+            "phone_number",
+            "website",
+            "has_wattsapp",
+            "has_facebook",
+            "addres_facebook",
+            ]
+        # user_m2m_values =[]
+        # profile_m2m_values =[]
+        profile = instance.profile
+
+        for attr, value in data.items():
+            if attr in user_attr:
+                setattr(instance, attr, value)
+            elif attr in profile_attr:
+                setattr(profile, attr, value)
+
+        instance.save()
+        profile.save()
+
+        return self.instance

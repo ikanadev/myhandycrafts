@@ -1,34 +1,34 @@
 """User Model."""
 
+from django.core.validators import RegexValidator
 # Django
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
-from django.core.validators import RegexValidator
 
-#Utilities
+# Utilities
 from myhandycrafts.utils.models import MyHandycraftsModel
+
 
 class TemporalUser(MyHandycraftsModel):
     """Temporal User Model.
     Temporal user is an object that make requests and reservations.
     """
-    name=models.CharField(
+    name = models.CharField(
         'name',
         max_length=256,
         blank=False,
         help_text=_('Temporal user name')
     )
 
-    email=models.EmailField(
+    email = models.EmailField(
         'email',
         unique=True,
         error_messages={
-            'unique':_('A user with  thise email already exists.')
+            'unique': _('A user with  thise email already exists.')
         }
     )
 
-    code_devide=models.CharField(max_length=516,blank=True)
+    code_devide = models.CharField(max_length=516, blank=True)
 
     # Contact Information User
     phone_regex = RegexValidator(
@@ -42,7 +42,6 @@ class TemporalUser(MyHandycraftsModel):
         default=False,
         help_text=_('Set to true when the user have verified its email address.')
     )
-
 
     def __str__(self):
         """ Return name and email"""

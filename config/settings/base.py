@@ -2,13 +2,12 @@
 Base settings to build other settings files upon.
 """
 
-import environ
-
 from datetime import timedelta
 
+import environ
 
 ROOT_DIR = (
-    environ.Path(__file__) - 3
+        environ.Path(__file__) - 3
 )  # (myhandycrafts/config/settings/base.py - 3 = myhandycrafts/)
 APPS_DIR = ROOT_DIR.path("myhandycrafts")
 
@@ -79,6 +78,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "myhandycrafts.users.apps.UsersConfig",
     "myhandycrafts.categories.apps.CategoriesConfig",
+    "myhandycrafts.stores.apps.StoresConfig",
+    "myhandycrafts.maps.apps.MapsConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -243,7 +244,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
+                      "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -299,7 +300,6 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
-
 # Your stuff...
 # ------------------------------------------------------------------------------
 
@@ -307,11 +307,12 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication'
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
-
 
 ACCESS_TOKEN_LIFETIME = timedelta(days=5)
 REFRESH_TOKEN_LIFETIME = timedelta(days=5)
-

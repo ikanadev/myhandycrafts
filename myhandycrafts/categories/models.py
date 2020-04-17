@@ -3,7 +3,6 @@
 # Django
 from django.db import models
 
-
 # Utilities
 from myhandycrafts.utils.models import MyHandycraftsModel
 
@@ -15,19 +14,14 @@ class Category(MyHandycraftsModel):
     that make the craftsman.
     """
 
-    name=models.CharField(
-        'Category name',
+    name = models.CharField(
+        'Rubro name',
         max_length=128,
         blank=False,
     )
 
-    description=models.TextField(max_length=512,blank=True)
+    description = models.TextField(max_length=512, blank=True)
 
     def __str__(self):
         """ Return category name"""
         return self.name
-
-
-
-
-

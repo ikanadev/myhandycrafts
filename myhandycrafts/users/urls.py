@@ -15,8 +15,7 @@
 
 
 # Django
-from django.urls import include,path
-
+from django.urls import include, path
 # Django REST Framework
 from rest_framework.routers import DefaultRouter
 
@@ -27,6 +26,6 @@ router = DefaultRouter()
 router.register(r'users', user_views.UserViewSet, basename='users')
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]
 

@@ -1,25 +1,25 @@
 """User Model."""
 
+from django.contrib.auth.models import AbstractUser
 # Django
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 
-
-#Utilities
+# Utilities
 from myhandycrafts.utils.models import MyHandycraftsModel
 
-class User(MyHandycraftsModel,AbstractUser):
+
+class User(MyHandycraftsModel, AbstractUser):
     """User Model.
     Extends from Django's abstract user, change the
     username field to email and add some extra field.
     """
 
-    email=models.EmailField(
+    email = models.EmailField(
         'email',
         unique=True,
         error_messages={
-            'unique':_('A user with  thise email already exists.')
+            'unique': _('A user with  thise email already exists.')
         }
     )
 
@@ -46,8 +46,7 @@ class User(MyHandycraftsModel,AbstractUser):
         ('B', 'Craftsman'),
         ('C', 'Client'),
     )
-    type_user = models.CharField(max_length=1, choices=TYPE_CHOICES,default='C')
-
+    type_user = models.CharField(max_length=1, choices=TYPE_CHOICES, default='C')
 
     def __str__(self):
         """Return firstaname and last name"""

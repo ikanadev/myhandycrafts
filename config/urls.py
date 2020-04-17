@@ -1,35 +1,29 @@
 from django.conf import settings
-from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
+from django.urls import include, path
 from django.views import defaults as default_views
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-
-
 
 urlpatterns = [
-    path(settings.ADMIN_URL, admin.site.urls),
-    path('',include(('myhandycrafts.users.urls','users'),namespace='users')),
+                  path(settings.ADMIN_URL, admin.site.urls),
+                  path('', include(('myhandycrafts.users.urls', 'users'), namespace='users')),
+                  path('', include(('myhandycrafts.categories.urls', 'categories'), namespace='categories')),
+                  path('', include(('myhandycrafts.maps.urls', 'maps'), namespace='maps')),
 
-    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+                  # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+                  # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    # path(
-    #     "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
-    # ),
-    # Django Admin, use {% url 'admin:index' %}
+                  # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+                  # path(
+                  #     "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
+                  # ),
+                  # Django Admin, use {% url 'admin:index' %}
 
-    # User management
-    # path("users/", include("myhandycrafts.users.urls", namespace="users")),
-    # path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+                  # User management
+                  # path("users/", include("myhandycrafts.users.urls", namespace="users")),
+                  # path("accounts/", include("allauth.urls")),
+                  # Your stuff: custom urls includes go here
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

@@ -1,20 +1,19 @@
 """  Token jwt """
 
-# Django
-from config.settings.base import(
-    ACCESS_TOKEN_LIFETIME,
-    REFRESH_TOKEN_LIFETIME
-)
-
-
 # Django REST Framework
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# Utilities
-from datetime import timedelta
-
+# Django
+from config.settings.base import (
+    ACCESS_TOKEN_LIFETIME,
+    REFRESH_TOKEN_LIFETIME
+)
 # Models
 from myhandycrafts.users.models import User
+
+
+# Utilities
+# from datetime import timedelta
 
 
 def get_token(user):
@@ -23,7 +22,8 @@ def get_token(user):
     refresh_token['email'] = user.email
     return refresh_token
 
-def get_response_token(user_pk,reset_password):  # login
+
+def get_response_token(user_pk, reset_password):  # login
 
     user = User.objects.get(pk=user_pk)
     refresh = get_token(user)

@@ -1,0 +1,3 @@
+from .departaments import DepartamentModelSerializer
+from .provinces import  ProvinceModelSerializer
+from .municipalities import MunicipalityModelSerializer

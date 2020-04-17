@@ -1,17 +1,20 @@
 """User models admin."""
 
-#Django
-from django.contrib import admin
-from django.contrib.auth.admin import  UserAdmin
+# Django
 
 # Models
-from myhandycrafts.users.models import User,Profile
+# Django
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
+# Models
+from myhandycrafts.users.models import User, Profile
 
 
 class CustomUserAdmin(UserAdmin):
     """User model admin."""
 
-    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff', )
+    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff',)
     list_filter = ('type_user', 'is_staff', 'created_at', 'updated_at')
 
 
@@ -25,11 +28,6 @@ class ProfileAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
-
-
-
-
-
 
 # from django.contrib.auth import get_user_model
 #
