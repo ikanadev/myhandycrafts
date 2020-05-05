@@ -25,15 +25,11 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostModelSerializer
     filter_backends = (SearchFilter,OrderingFilter)
     search_fields = ('title','description')
-    ordering_fields = ('name',
-                       'user',
-                       'municipaly',
-                       'reputation',
-                       'publications',
+    ordering_fields = ('title',
                        'visits',
                        )
-    ordering = ('name','updated_at')
-    filter_fields = ('user','municipality')
+    ordering = ('title','updated_at')
+    # filter_fields = ('user')
     queryset =  Post.objects.filter(is_deleted=False)
     pagination_class = MyHandycraftsPageNumberPagination
 

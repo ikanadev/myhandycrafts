@@ -11,6 +11,7 @@ urlpatterns = [
                   path('', include(('myhandycrafts.maps.urls', 'maps'), namespace='maps')),
                   path('', include(('myhandycrafts.stores.urls', 'stores'), namespace='stores')),
                   path('', include(('myhandycrafts.fairs.urls', 'fairs'), namespace='fairs')),
+                  path('', include(('myhandycrafts.posts.urls', 'posts'), namespace='posts')),
 
                   # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
                   # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

@@ -29,9 +29,11 @@ class PostMediaViewSet(mixins.CreateModelMixin,
     queryset = PostMedia.objects.filter(is_deleted=False)
     permission_classes = [IsAuthenticated]
     serializer_class = PostMediaModelSerializer
-    # # filter_backends = (OrderingFilter)
-    # ordering_fields = ('order',)
-    # ordering = ('order',)
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ()
+    ordering_fields = ('order',
+                       )
+    ordering = ('order')
 
 
     def perform_destroy(self, instance):

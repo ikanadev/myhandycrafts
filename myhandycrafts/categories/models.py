@@ -22,6 +22,12 @@ class Category(MyHandycraftsModel):
 
     description = models.TextField(max_length=512, blank=True)
 
+    #statitics
+
+    count_post = models.PositiveIntegerField(default=0)
+    count_craftman = models.PositiveIntegerField(default=0)
+
+
     def __str__(self):
         """ Return category name"""
         return self.name

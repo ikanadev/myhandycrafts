@@ -27,11 +27,20 @@ class Post(MyHandycraftsModel):
     title = models.CharField(max_length=256)
     description = models.TextField()
     price = models.FloatField()
-    cuantitie = models.PositiveIntegerField(null=True,default=None)
+    quantity = models.PositiveIntegerField(default=1)
     state = models.CharField(max_length=2,
                              choices=STATUS_POST_CHOICES,
                              verbose_name='status_post_choices',
                              default='AV')
+    # stats
+    reputation = models.FloatField(
+        default=5.0,
+        help_text="Fair's reputation based on crafts."
+    )
+    visits = models.PositiveIntegerField(default=0)
+    count_stores = models.PositiveIntegerField(default=0)
+    count_fairs = models.PositiveIntegerField(default=0)
+    count_request = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         """Return title"""
