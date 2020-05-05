@@ -80,6 +80,8 @@ LOCAL_APPS = [
     "myhandycrafts.categories.apps.CategoriesConfig",
     "myhandycrafts.stores.apps.StoresConfig",
     "myhandycrafts.maps.apps.MapsConfig",
+    "myhandycrafts.fairs.apps.FairsConfig",
+    "myhandycrafts.posts.apps.PostsConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

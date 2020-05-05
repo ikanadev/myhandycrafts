@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 # Django REST Framework
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import  SearchFilter,OrderingFilter
 
 # Permissions
 from rest_framework.permissions import (
@@ -32,10 +33,12 @@ from myhandycrafts.users.serializers import (
 )
 
 # Pagination
-from myhandycrafts.utils.pagination import UserPageNumberPagination
+from myhandycrafts.utils.pagination import MyHandycraftsPageNumberPagination
 
 # datetime
 from datetime import *
+
+
 
 class UserViewSet(mixins.RetrieveModelMixin,
                   mixins.UpdateModelMixin,
@@ -48,8 +51,18 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
     queryset = User.objects.filter(is_deleted=False)
     # serializer_class = UserModelSerializer
-    lookup_field = 'username'
-    pagination_class = UserPageNumberPagination
+    # lookup_field = 'username'
+    pagination_class = MyHandycraftsPageNumberPagination
+
+    filter_backends = (
+        SearchFilter,
+        OrderingFilter,
+        # filters.DjangoFilterBackend
+    )
+    search_fields = ('username','created_at')
+    ordering_fields = ('username','created_at')
+    ordering = ('username','created_at')
+    # queryset = Province.objects.filter(is_deleted=False)
 
 
     def get_permissions(self):
@@ -112,6 +125,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
         data = {
             'state': 1,
             'data':'',
+            'message':'your Password has send to your email'
 
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -147,10 +161,10 @@ class UserViewSet(mixins.RetrieveModelMixin,
         user = serializer.save()
         data = {
             'state': 1,
+            'data':UserProfilePublicSerializer(instance).data,
             'message': _("The user picture was uploaded ")
         }
         return Response(data, status=status.HTTP_200_OK)
-
 
     @action(detail=True, methods=['POST'])
     def contact(self, request, *args, **kwargs):

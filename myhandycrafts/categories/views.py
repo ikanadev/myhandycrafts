@@ -31,9 +31,9 @@ class CategoryViewSet(mixins.CreateModelMixin,
     serializer_class = CategoryModelSerializer
     # filter name
     filter_backends = (SearchFilter,OrderingFilter)
-    search_fields = ('name')
-    ordering_fields = ('name','created_at')
-    filter_fields = ('name')
+    search_fields = ('name',)
+    ordering_fields = ('name','created_at',)
+    # filter_fields = ('name')
 
     queryset = Category.objects.filter(is_deleted=False)
 

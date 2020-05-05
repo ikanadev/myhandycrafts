@@ -14,8 +14,7 @@ class PostPageNumberPagination(PageNumberPagination):
 class ListPageNumberPagination(PageNumberPagination):
     page_size = 30
 
-class UserPageNumberPagination(PageNumberPagination):
+class MyHandycraftsPageNumberPagination(PageNumberPagination):
     page_size = 30
-    page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 200

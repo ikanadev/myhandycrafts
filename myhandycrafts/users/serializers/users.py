@@ -46,11 +46,13 @@ class UserModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            'id',
             'username',
             'first_name',
             'last_name',
             'email',
             'profile',
+            'is_staff',
         )
 
 
@@ -117,14 +119,14 @@ class UserTemporalPasswordSendSerializer(serializers.Serializer):
     def save(self):
         """Send Mail with temporal password."""
         user = self.context['user']
-        password_temporal = self.get_temporar_password()
+        password_temporal = self.get_temporal_password()
         UserTemporalPassword.objects.create(
             user=user,
             password=hashlib.sha256(password_temporal.encode('utf-8')).hexdigest()
         )
         self.send_email(password_temporal)
 
-    def get_temporar_password(self):
+    def get_temporal_password(self):
         """Return password hash"""
         letters = string.ascii_lowercase
         temp = ''.join(random.choice(letters) for i in range(10))
@@ -287,6 +289,7 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            'id',
             'username',
             'first_name',
             'last_name',
@@ -308,7 +311,6 @@ class UserUpdateModelSerializer(serializers.Serializer):
 
     ci = serializers.CharField(
         max_length=30,
-        validators=[UniqueValidator(queryset=Profile.objects.all())]
     )
 
     birth_date = serializers.DateField()
@@ -358,8 +360,7 @@ class UserUpdateModelSerializer(serializers.Serializer):
             "has_facebook",
             "addres_facebook",
             ]
-        # user_m2m_values =[]
-        # profile_m2m_values =[]
+
         profile = instance.profile
 
         for attr, value in data.items():

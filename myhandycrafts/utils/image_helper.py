@@ -16,7 +16,7 @@ import time
 
 class ImageHelper:
 
-    def compressImage(self,uploadedImage, width, height, quality):
+    def compressImage(self,uploadedImage, width, height, quality ):
         image = Image.open(uploadedImage)
         if image.mode != 'RGB':
             image = image.convert('RGB')
