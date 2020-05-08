@@ -74,6 +74,7 @@ THIRD_PARTY_APPS = [
     # "allauth.socialaccount",
     "rest_framework",
     "django_celery_beat",
+    "corsheaders",
 ]
 
 LOCAL_APPS = [
@@ -141,6 +142,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # STATIC
@@ -319,3 +321,12 @@ REST_FRAMEWORK = {
 
 ACCESS_TOKEN_LIFETIME = timedelta(days=5)
 REFRESH_TOKEN_LIFETIME = timedelta(days=5)
+
+
+
+## CORS from React
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_WHITELIST = (
+       'http://localhost:30001',
+)

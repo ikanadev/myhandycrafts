@@ -25,3 +25,5 @@ djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
 djangorestframework-simplejwt==4.3.0 #https://github.com/davesque/django-rest-framework-simplejwt
 
 #django-filter==2.0.0
+
+django-cors-headers==3.2.1
