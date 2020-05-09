@@ -5,7 +5,7 @@ from django.db import models
 
 # Utilities
 from myhandycrafts.utils.models import MyHandycraftsModel
-
+from myhandycrafts.utils.image_helper import ImageHelper
 
 class Category(MyHandycraftsModel):
     """ Category model.
@@ -21,6 +21,12 @@ class Category(MyHandycraftsModel):
     )
 
     description = models.TextField(max_length=512, blank=True)
+    image = models.ImageField(
+        'image Category',
+        upload_to='categories/images/',
+        blank=True,
+        null=True
+    )
 
     #statitics
 
@@ -31,3 +37,11 @@ class Category(MyHandycraftsModel):
     def __str__(self):
         """ Return category name"""
         return self.name
+
+
+    def save(self, *args, **kwargs):
+        """ save image on three size."""
+        imagesave = ImageHelper()
+        if str(self.image) is not '':
+            self.image = imagesave.compressImage(self.image, 1080, 1080, 50)
+        super(Category, self).save(*args, **kwargs)

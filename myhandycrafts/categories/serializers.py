@@ -24,6 +24,8 @@ class CategoryModelSerializer(serializers.ModelSerializer):
         max_length=512,
     )
 
+    image = serializers.ImageField(required=False)
+
     class Meta:
         """Meta class."""
         model = Category
@@ -31,8 +33,20 @@ class CategoryModelSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
+            'image',
         )
 
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    """Category model serializer."""
+
+    class Meta:
+        """Meta class."""
+        model = Category
+        fields = (
+            'id',
+            'name',
+        )
 
 
 

@@ -7,7 +7,11 @@ from rest_framework import mixins,viewsets
 from rest_framework.permissions import IsAdminUser,IsAuthenticated,AllowAny
 
 # Serilizers
-from myhandycrafts.categories.serializers import CategoryModelSerializer
+from myhandycrafts.categories.serializers import (
+    CategoryModelSerializer,
+    CategoryListSerializer,
+)
+
 
 
 # Filters
@@ -16,6 +20,10 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 # Models
 from myhandycrafts.categories.models import Category
+
+# Pagination
+from myhandycrafts.utils.pagination import MyHandycraftsPageNumberPagination
+
 
 # time
 from django.utils import timezone
@@ -29,6 +37,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     """Category view set."""
 
     serializer_class = CategoryModelSerializer
+    pagination_class = MyHandycraftsPageNumberPagination
     # filter name
     filter_backends = (SearchFilter,OrderingFilter)
     search_fields = ('name',)
@@ -40,7 +49,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     def get_permissions(self):
         """Assing permision base on action."""
         permissions = []
-        if self.action in ['create','update']:
+        if self.action in ['create','update','destroy']:
             permissions.append(IsAdminUser)
         else:
             permissions.append(AllowAny)
@@ -50,6 +59,20 @@ class CategoryViewSet(mixins.CreateModelMixin,
         instance.is_deleted=True
         instance.deleted_at = timezone.now()
         instance.save()
+        """assing polices"""
+
+
+class CategoryListViewSet(mixins.ListModelMixin,
+                          viewsets.GenericViewSet):
+    serializer_class = CategoryListSerializer
+    # pagination_class = MyHandycraftsPageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('name',)
+    ordering_fields = ('name', 'created_at',)
+    # filter_fields = ('name')
+
+    queryset = Category.objects.filter(is_deleted=False)
+
 
 
 
