@@ -152,20 +152,39 @@ class UserTemporalPasswordSendSerializer(serializers.Serializer):
         msg.send()
 
 
-class UserUpdatePasswordSerializer(serializers.Serializer):
+# class UserUpdatePasswordSerializer(serializers.Serializer):
+#     """ User update his password."""
+#     password = serializers.CharField(min_length=6)
+#     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+#
+#     def validate_password(self, data):
+#         return data
+#
+#     def create(self, data):
+#         user = data['user']
+#         new_password = data['password']
+#         user.set_password(new_password)
+#         user.save()
+#         return data
+
+
+class UserUpdatePasswordSerializer(serializers.ModelSerializer):
     """ User update his password."""
     password = serializers.CharField(min_length=6)
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-    def validate_password(self, data):
-        return data
+    class Meta:
+        model = User
+        fields = ('password',)
 
-    def create(self, data):
-        user = data['user']
+    # def validate_password(self, data):
+    #     """rule for password"""
+    #     return data
+
+    def update(self, instance, data):
         new_password = data['password']
-        user.set_password(new_password)
-        user.save()
-        return data
+        instance.set_password(new_password)
+        instance.save()
+        return instance
 
 
 class UserSignUpSerializer(serializers.Serializer):
@@ -374,3 +393,25 @@ class UserUpdateModelSerializer(serializers.Serializer):
         profile.save()
 
         return self.instance
+
+
+
+class UserShortDetailSerializer(serializers.ModelSerializer):
+    """User model serializer."""
+
+    picture = serializers.SerializerMethodField()
+
+    def get_picture(self,obj):
+        return ProfileModelSerializer(obj.profile).data['picture']
+
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'picture',
+        )

@@ -30,6 +30,7 @@ from myhandycrafts.users.serializers import (
     ProfilePictureSerializer,
     ProfileContactSerializer,
     UserUpdateModelSerializer,
+    UserShortDetailSerializer,
 )
 
 # Pagination
@@ -67,11 +68,11 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
     def get_permissions(self):
         """Assing permission based on actions."""
-        if self.action in ['login', 'recovery','profilepublic']:
+        if self.action in ['login', 'recovery','profilepublic','shortdetail',]:
             permissions = [AllowAny]
         elif self.action in ['register','update','destroy','list']:
             permissions = [IsAuthenticated, IsAdmin]
-        elif self.action in ['profilepicture','retrieve','contact']:
+        elif self.action in ['profilepicture','retrieve','contact','updatepassword']:
             permissions = [IsAuthenticated, IsAdminorIsOwner]
         else:
             permissions = [IsAuthenticated]
@@ -81,6 +82,8 @@ class UserViewSet(mixins.RetrieveModelMixin,
         """ Assign serializer based on action"""
         if self.action == 'profilepublic':
             return UserProfilePublicSerializer
+        if self.action == 'shortdetail':
+            return UserShortDetailSerializer
         if self.action == 'update':
             return UserUpdateModelSerializer
         return UserModelSerializer
@@ -110,22 +113,25 @@ class UserViewSet(mixins.RetrieveModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {
-            'state': 1
+            'state': 1,
+            'data':'',
+            'message':'Your Password has send to your email.'
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['post'])
-    def updatepassword(self, request):
+    @action(detail=True, methods=['post'])
+    def updatepassword(self, request, *args, **kwargs):
+        instance = self.get_object()
         serializer = UserUpdatePasswordSerializer(
-            data=request.data,
-            context={'request': request}
+            instance,
+            data=request.data
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {
             'state': 1,
             'data':'',
-            'message':'your Password has send to your email'
+            'message':'Password has been updated'
 
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -151,6 +157,12 @@ class UserViewSet(mixins.RetrieveModelMixin,
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def shortdetail(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['POST'])
     def profilepicture(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -161,7 +173,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
         user = serializer.save()
         data = {
             'state': 1,
-            'data':UserProfilePublicSerializer(instance).data,
+            'data':UserModelSerializer(instance).data,
             'message': _("The user picture was uploaded ")
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -176,7 +188,8 @@ class UserViewSet(mixins.RetrieveModelMixin,
         serializer.save()
         data = {
             'state': 1,
-            'message': UserModelSerializer(instance).data
+            'data':UserModelSerializer(instance).data,
+            'message': "Contact information was updated"
         }
         return Response(data, status=status.HTTP_200_OK)
 
