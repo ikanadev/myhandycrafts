@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from myhandycrafts.users.models import User
 from myhandycrafts.users.permissions import IsAdmin,IsAdminorIsOwner
 
+
 # Serializers
 from myhandycrafts.users.serializers import (
     UserModelSerializer,
@@ -38,6 +39,10 @@ from myhandycrafts.utils.pagination import MyHandycraftsPageNumberPagination
 
 # datetime
 from datetime import *
+
+# Utilities
+from myhandycrafts.utils.token import get_response_token
+
 
 
 
@@ -104,6 +109,21 @@ class UserViewSet(mixins.RetrieveModelMixin,
                 'token': token
             },
             'message':''
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def credential(self, request):
+
+        user = self.request.user
+        token = get_response_token(user.pk,False)
+        data = {
+            'state': 1,
+            'data': {
+                'user': UserModelSerializer(user).data,
+                'token': token
+            },
+            'message': ''
         }
         return Response(data, status=status.HTTP_200_OK)
 
