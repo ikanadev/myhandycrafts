@@ -34,8 +34,8 @@ class MyHandycraftsModel(models.Model):
     )
 
     deleted_at = models.DateTimeField(
-        'updated_at',
-        auto_now=True,
+        'deleted_at',
+        null=True,
         help_text='Date time on which the objects was deleted.'
     )
 
