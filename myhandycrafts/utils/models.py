@@ -10,14 +10,17 @@ class MyHandycraftsModel(models.Model):
     MyHandycrafts Model is an abstract base class from which every
     other model in the project will insert in their code. This clas provides
     every tables with the following attributes:
-        - is_deleted (Boolean): Store if the object is deleted
+        - active (Boolean): Store if the object is active
         - created_at (DateTime): Store the datetime the objects was created.
         - updated_at (DateTime): Store the last datetime the object was updated.
         - deleted_at (DateTime): Store the datetime the objects was deleted.
+        - created_by (user_id): Store the user_id was created.
+        - updated_by (user_id): Store the user_id was updated.
+        - deleted_by (user_id): Store the user_id  was deleted.
     """
-    is_deleted = models.BooleanField(
-        'is_deleted',
-        default=False,
+    active = models.BooleanField(
+        'is_active',
+        default=True,
         help_text='show when the object is active.'
     )
 

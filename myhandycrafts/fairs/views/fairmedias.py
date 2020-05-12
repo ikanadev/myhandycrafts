@@ -25,7 +25,7 @@ class FairMediaViewSet(mixins.CreateModelMixin,
                        mixins.DestroyModelMixin,
                        # mixins.ListModelMixin,
                        viewsets.GenericViewSet):
-    queryset = FairMedia.objects.filter(is_deleted=False)
+    queryset = FairMedia.objects.filter(active=True)
     permission_classes = [IsAuthenticated,IsAdminUser]
     serializer_class = FairMediaModelSerializer
     # # filter_backends = (OrderingFilter)
@@ -34,7 +34,7 @@ class FairMediaViewSet(mixins.CreateModelMixin,
 
 
     def perform_destroy(self, instance):
-        instance.is_deleted = True
+        instance.active = False
         instance.deleted_at = timezone.now()
         instance.save()
         """add policies when object is deleted"""

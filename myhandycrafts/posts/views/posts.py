@@ -30,7 +30,7 @@ class PostViewSet(viewsets.ModelViewSet):
                        )
     ordering = ('title','updated_at')
     # filter_fields = ('user')
-    queryset =  Post.objects.filter(is_deleted=False)
+    queryset =  Post.objects.filter(active=True)
     pagination_class = MyHandycraftsPageNumberPagination
 
     def get_permissions(self):
@@ -42,7 +42,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return {'user':self.request.user}
 
     def perform_destroy(self, instance):
-        instance.is_deleted = True
+        instance.active = False
         instance.deleted_at = timezone.now()
         instance.save()
         """add policies when object is deleted"""

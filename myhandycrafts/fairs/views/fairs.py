@@ -20,7 +20,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 class FairViewSet(viewsets.ModelViewSet):
 
-    queryset = Fair.objects.filter(is_deleted=False)
+    queryset = Fair.objects.filter(active=True)
     permission_classes = [IsAuthenticated,IsAdminUser]
     serializer_class = FairModelSerializer
     filter_backends = (SearchFilter, OrderingFilter)
@@ -30,7 +30,7 @@ class FairViewSet(viewsets.ModelViewSet):
 
 
     def perform_destroy(self, instance):
-        instance.is_deleted = True
+        instance.active = False
         instance.deleted_at = timezone.now()
         instance.save()
         """add policies when object is deleted"""

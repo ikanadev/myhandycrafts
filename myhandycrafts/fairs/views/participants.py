@@ -20,7 +20,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     """Participant  view set
     handle admin CRUD
     """
-    queryset = Participant.objects.filter(is_deleted=False)
+    queryset = Participant.objects.filter(active=True)
     permission_classes = [IsAuthenticated, IsAdminUser]
     serializer_class = ParticipantModelSerializer
     filter_backends = (SearchFilter, OrderingFilter)
@@ -29,7 +29,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     ordering = ('user','created_at')
 
     def perform_destroy(self, instance):
-        instance.is_deleted = True
+        instance.active=False
         instance.deleted_at = timezone.now()
         instance.save()
         """add policies when object is deleted"""

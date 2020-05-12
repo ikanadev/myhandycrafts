@@ -41,10 +41,10 @@ class CategoryViewSet(mixins.CreateModelMixin,
     # filter name
     filter_backends = (SearchFilter,OrderingFilter)
     search_fields = ('name',)
-    ordering_fields = ('name','created_at',)
+    ordering_fields = ('name','count_post','count_craftman','created_at',)
     # filter_fields = ('name')
 
-    queryset = Category.objects.filter(is_deleted=False)
+    queryset = Category.objects.filter(active=True)
 
     def get_permissions(self):
         """Assing permision base on action."""
@@ -56,7 +56,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
         return [permission() for permission in permissions]
 
     def perform_destroy(self, instance):
-        instance.is_deleted=True
+        instance.active=False
         instance.deleted_at = timezone.now()
         instance.save()
         """assing polices"""
@@ -68,10 +68,10 @@ class CategoryListViewSet(mixins.ListModelMixin,
     # pagination_class = MyHandycraftsPageNumberPagination
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('name',)
-    ordering_fields = ('name', 'created_at',)
+    ordering_fields = ('name', 'count_post', 'count_craftman', 'created_at',)
     # filter_fields = ('name')
 
-    queryset = Category.objects.filter(is_deleted=False)
+    queryset = Category.objects.filter(active=True)
 
 
 

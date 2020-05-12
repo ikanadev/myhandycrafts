@@ -26,7 +26,7 @@ class StoreMediaViewSet(mixins.CreateModelMixin,
                        mixins.DestroyModelMixin,
                        # mixins.ListModelMixin,
                        viewsets.GenericViewSet):
-    queryset = StoreMedia.objects.filter(is_deleted=False)
+    queryset = StoreMedia.objects.filter(active=True)
     permission_classes = [IsAuthenticated]
     serializer_class = StoreMediaModelSerializer
     # # filter_backends = (OrderingFilter)
@@ -35,7 +35,7 @@ class StoreMediaViewSet(mixins.CreateModelMixin,
 
 
     def perform_destroy(self, instance):
-        instance.is_deleted = True
+        instance.active = False
         instance.deleted_at = timezone.now()
         instance.save()
         """add policies when object is deleted"""

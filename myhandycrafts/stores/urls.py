@@ -6,10 +6,15 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 # Views
-from .views import StoreViewSet,StoreMediaViewSet
+from .views import (
+    StoreViewSet,
+    StoreMediaViewSet,
+    StoreFeedViewSet,
+)
 
 router = DefaultRouter()
 router.register(r'stores', StoreViewSet, basename='stores')
+router.register(r'stores_feed', StoreFeedViewSet, basename='stores')
 router.register(r'storemedias', StoreMediaViewSet, basename='storemedias')
 
 urlpatterns = [

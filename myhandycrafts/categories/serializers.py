@@ -16,7 +16,7 @@ class CategoryModelSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         min_length=4,
         max_length=128,
-        validators=[UniqueValidator(queryset=Category.objects.filter(is_deleted=False))]
+        validators=[UniqueValidator(queryset=Category.objects.filter(active=True))]
     )
 
     description = serializers.CharField(
@@ -34,6 +34,13 @@ class CategoryModelSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'image',
+            'count_post',
+            'count_craftman',
+        )
+
+        only_read_fields = (
+            'count_post',
+            'count_craftman',
         )
 
 

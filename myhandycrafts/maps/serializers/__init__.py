@@ -1,3 +1,6 @@
 from .departaments import DepartamentModelSerializer
+from .departaments import DepartamentListSerializer
 from .provinces import  ProvinceModelSerializer
+from .provinces import  ProvinceListSerializer
 from .municipalities import MunicipalityModelSerializer
+from .municipalities import MunicipalityListSerializer

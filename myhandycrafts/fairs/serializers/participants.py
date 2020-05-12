@@ -33,18 +33,18 @@ class ParticipantModelSerializer(serializers.ModelSerializer):
     def create(self, data):
         if Participant.objects.filter(user=data['user'],
                                       fair=data['fair'],
-                                      is_deleted=False).exists():
+                                      active=True).exists():
             raise serializers.ValidationError(_("Already exists User on fair"))
 
         return super(ParticipantModelSerializer,self).create(data)
-
-    def update(self, instance, data):
-        if Participant.objects.filter(user=data['user'],
-                                      fair=data['fair'],
-                                      is_deleted=False).exclude(pk=instance.pk).exists():
-            raise serializers.ValidationError(_("Already exists User on fair"))
-
-        return super(ParticipantModelSerializer,self).update(instance,data)
+    #
+    # def update(self, instance, data):
+    #     if Participant.objects.filter(user=data['user'],
+    #                                   fair=data['fair'],
+    #                                   active=True).exclude(pk=instance.pk).exists():
+    #         raise serializers.ValidationError(_("Already exists User on fair"))
+    #
+    #     return super(ParticipantModelSerializer,self).update(instance,data)
 
 
 

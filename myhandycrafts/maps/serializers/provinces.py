@@ -7,6 +7,13 @@ from rest_framework.validators import UniqueValidator
 # Model
 from myhandycrafts.maps.models import Province
 
+# serializer
+from myhandycrafts.maps.serializers import DepartamentListSerializer
+
+
+
+
+
 
 class ProvinceModelSerializer(serializers.ModelSerializer):
     """Province model serializer."""
@@ -14,7 +21,7 @@ class ProvinceModelSerializer(serializers.ModelSerializer):
                                  max_length=32,
                                  validators=[UniqueValidator(
                                      queryset=Province.objects.filter(
-                                         is_deleted=False
+                                         active=True
                                      )
                                  )]
                                  )
@@ -30,7 +37,18 @@ class ProvinceModelSerializer(serializers.ModelSerializer):
 
     def validate_departament(self,data):
         """validate valid departament"""
-        if data.is_deleted:
+        if not data.active:
             raise serializers.ValidationError("Invalid departament")
         return data
 
+
+class ProvinceListSerializer(serializers.ModelSerializer):
+    """Province model serializer."""
+
+    class Meta:
+        """Meta class."""
+        model = Province
+        fields = (
+            'id',
+            'name',
+        )

@@ -194,12 +194,12 @@ class UserSignUpSerializer(serializers.Serializer):
     """
 
     email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.filter(is_deleted=False))]
+        validators=[UniqueValidator(queryset=User.objects.filter(active=True))]
     )
     username = serializers.CharField(
         min_length=4,
         max_length=20,
-        validators=[UniqueValidator(queryset=User.objects.filter(is_deleted=False))]
+        validators=[UniqueValidator(queryset=User.objects.filter(active=True))]
     )
 
     password = serializers.CharField(min_length=6, max_length=64)

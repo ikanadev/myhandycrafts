@@ -33,7 +33,7 @@ class Store(MyHandycraftsModel):
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True,max_length=1024)
 
-    ubicacion = models.TextField(max_length=512)
+    location = models.TextField(max_length=512)
     gps = models.CharField(max_length=10)
 
     # stats

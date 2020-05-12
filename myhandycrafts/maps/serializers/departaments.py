@@ -14,7 +14,7 @@ class DepartamentModelSerializer(serializers.ModelSerializer):
                                  max_length=32,
                                  validators=[UniqueValidator(
                                      queryset=Departament.objects.filter(
-                                         is_deleted=False
+                                         active=True
                                      )
                                  )]
                                  )
@@ -25,4 +25,17 @@ class DepartamentModelSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
+        )
+
+
+
+class DepartamentListSerializer(serializers.ModelSerializer):
+    """Departament model serializer."""
+
+    class Meta:
+        """Meta class."""
+        model = Departament
+        fields = (
+            'id',
+            'name',
         )

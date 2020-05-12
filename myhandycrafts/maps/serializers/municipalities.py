@@ -14,7 +14,7 @@ class MunicipalityModelSerializer(serializers.ModelSerializer):
                                  max_length=32,
                                  validators=[UniqueValidator(
                                      queryset=Municipality.objects.filter(
-                                         is_deleted=False
+                                         active=True
                                      )
                                  )]
                                  )
@@ -35,11 +35,11 @@ class MunicipalityModelSerializer(serializers.ModelSerializer):
 
     def validate_province(self,province):
 
-        if province.is_deleted:
+        if not province.active:
             raise serializers.ValidationError("Invalid pk \"{}\" - object "
                                               "does not exist".format(
                                                             province.pk))
-        if province.departament.is_deleted:
+        if not province.departament.active:
             raise serializers.ValidationError("Invalid pk \"{}\" - object "
                                               "does not exist".format(
                                                             province.pk))
@@ -66,3 +66,14 @@ class MunicipalityModelSerializer(serializers.ModelSerializer):
         instance.province = province
         return super(MunicipalityModelSerializer,self).update(instance,data)
 
+
+class MunicipalityListSerializer(serializers.ModelSerializer):
+    """Municipality model serializer."""
+
+    class Meta:
+        """Meta class."""
+        model = Municipality
+        fields = (
+            'id',
+            'name',
+        )

@@ -55,7 +55,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
     Handle sing up, log in, and account verification.
     """
 
-    queryset = User.objects.filter(is_deleted=False)
+    queryset = User.objects.filter(active=True)
     # serializer_class = UserModelSerializer
     # lookup_field = 'username'
     pagination_class = MyHandycraftsPageNumberPagination
@@ -68,7 +68,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
     search_fields = ('username','created_at')
     ordering_fields = ('username','created_at')
     ordering = ('username','created_at')
-    # queryset = Province.objects.filter(is_deleted=False)
+
 
 
     def get_permissions(self):
@@ -226,7 +226,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
 
     def perform_destroy(self, instance):
-        instance.is_deleted=True
+        instance.active=False
         instance.deleted_at = datetime.now()
         instance.deleted_by = self.request.user.pk
         instance.save()

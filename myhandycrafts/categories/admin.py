@@ -16,26 +16,22 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
     fields= ('name',
-                    'description',
-                    )
+             'description',
+             'active',
+            )
 
     list_display = ('name',
                     'description',
                     'count_post',
                     'count_craftman',
-                    'is_deleted',
+                    'active',
                     )
 
-    list_filter = ('is_deleted',)
+    list_filter = ('active',)
 
     search_fields = ('name',
                     'description')
 
-    # ordering_fields=('name',
-    #                  'is_deleted',
-    #                  'count_post',
-    #                  'count_craftman',
-    #                  )
 
 
 
