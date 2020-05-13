@@ -14,8 +14,8 @@ from myhandycrafts.users.models import User, Profile
 class CustomUserAdmin(UserAdmin):
     """User model admin."""
 
-    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff',)
-    list_filter = ('type_user', 'is_staff', 'created_at', 'updated_at')
+    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff','active','is_active',)
+    list_filter = ('type_user', 'is_staff')
 
 
 @admin.register(Profile)

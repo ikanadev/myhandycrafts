@@ -2,14 +2,17 @@
 
 # Django REST Framework
 from rest_framework import mixins, viewsets
-
+from rest_framework.decorators import action
+from rest_framework.response import Response
 # Permissions
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
+
 
 # Serializer
 from myhandycrafts.maps.serializers import (
     ProvinceModelSerializer,
     ProvinceListSerializer,
+    ProvinceDetailModelSerializer
 )
 
 # models
@@ -31,7 +34,7 @@ class ProvinceViewSet(mixins.CreateModelMixin,
                          viewsets.GenericViewSet):
     """Province view set."""
 
-    serializer_class = ProvinceModelSerializer
+    # serializer_class = ProvinceModelSerializer
     filter_backends = (
         SearchFilter,
         OrderingFilter,
@@ -63,6 +66,11 @@ class ProvinceViewSet(mixins.CreateModelMixin,
             permissions.append(AllowAny)
         return [permission() for permission in permissions]
 
+    def get_serializer_class(self):
+        if self.action in ['list','details']:
+            return ProvinceDetailModelSerializer
+        return ProvinceModelSerializer
+
     def perform_destroy(self, instance):
         instance.active=False
         instance.deleted_at=timezone.now()
@@ -75,6 +83,12 @@ class ProvinceViewSet(mixins.CreateModelMixin,
                                             deleted_at=timezone.now()
                                         )
 
+    @action(detail=True, methods=['get'])
+    def details(self, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
 
 class ProvinceListViewSet(mixins.ListModelMixin,
                           viewsets.GenericViewSet):
@@ -84,10 +98,4 @@ class ProvinceListViewSet(mixins.ListModelMixin,
     ordering_fields = ('name','created_at', )
     queryset = Province.objects.filter(active=True)
 
-    def get_queryset(self):
-        queryset = Province.objects.filter(active=True)
-        if 'departament' in self.request.GET:
-            return queryset.filter(departament_id=self.request.GET.get('departament'))
-
-        return queryset
 

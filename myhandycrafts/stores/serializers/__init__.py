@@ -1,3 +1,3 @@
 from .stores import StoreModelSerializer
-from .stores import StoreDetailSerializer
+from .stores import StoreDetailModelSerializer
 from .storemedias import StoreMediaModelSerializer

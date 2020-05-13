@@ -1,3 +1,3 @@
-from .fairs import FairViewSet
-from .fairmedias import FairMediaViewSet
-from .participants import ParticipantViewSet
+from .fairs import *
+from .fairmedias import *
+from .participants import *

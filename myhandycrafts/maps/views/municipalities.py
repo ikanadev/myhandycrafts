@@ -2,6 +2,8 @@
 
 # Django REST Framework
 from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # Permissions
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
@@ -10,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from myhandycrafts.maps.serializers import (
     MunicipalityModelSerializer,
     MunicipalityListSerializer,
+    MunicipalityDetailModelSerializer,
 )
 
 # models
@@ -44,9 +47,6 @@ class MunicipalityViewSet(mixins.CreateModelMixin,
     def get_queryset(self):
         """ queryset with filter departament, and province"""
         queryset = Municipality.objects.filter(active=True)
-        # for field in self.filter_fields:
-        #     if field in self.request.GET:
-        #         queryset.filter(self.request.GET.get(field))
 
         if 'departament' in self.request.GET:
             queryset = queryset.filter(departament_id=self.request.GET.get('departament'))
@@ -55,6 +55,17 @@ class MunicipalityViewSet(mixins.CreateModelMixin,
             queryset = queryset.filter(province_id=self.request.GET.get('province'))
 
         return queryset
+
+    def get_serializer_class(self):
+        if self.action in ['list','details']:
+            return MunicipalityDetailModelSerializer
+        return MunicipalityModelSerializer
+
+    def get_serializer_context(self):
+        return {
+                'user':self.request.user,
+                'fair':self.fair
+                }
 
     def get_permissions(self):
         """Assing permision base on action."""
@@ -71,6 +82,12 @@ class MunicipalityViewSet(mixins.CreateModelMixin,
         instance.deleted_at=timezone.now()
         instance.save()
         """add policies when object is deleted"""
+
+    @action(detail=True, methods=['get'])
+    def details(self, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class MunicipalityListViewSet(mixins.ListModelMixin,

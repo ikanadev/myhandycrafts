@@ -12,7 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 # Serializers
 from myhandycrafts.users.serializers import UserShortDetailSerializer
 from myhandycrafts.maps.serializers import MunicipalityListSerializer
-
+# from myhandycrafts.stores.serializers.storemedias import StoreMediaModelSerializer
+from myhandycrafts.stores.serializers.storemedias import StoreMediaModelSerializer
 
 
 class StoreModelSerializer(serializers.ModelSerializer):
@@ -42,12 +43,6 @@ class StoreModelSerializer(serializers.ModelSerializer):
             'updated_at',
         )
 
-    # def validate_user(self,data):
-    #     user = self.context['user']
-    #     if not user.is_staff:
-    #         if user !=data:
-    #             raise serializers.ValidationError('You dont have permision for this action')
-    #     return data
 
 
     def validate(self,data):
@@ -66,9 +61,10 @@ class StoreModelSerializer(serializers.ModelSerializer):
         return super(StoreModelSerializer, self).update(instance, data)
 
 
-class StoreDetailSerializer(serializers.ModelSerializer):
+class StoreDetailModelSerializer(serializers.ModelSerializer):
     user = UserShortDetailSerializer(many=False)
     municipality = MunicipalityListSerializer(many=False)
+    storemedias = StoreMediaModelSerializer(many=True)
 
     class Meta:
         model = Store
@@ -80,6 +76,7 @@ class StoreDetailSerializer(serializers.ModelSerializer):
                 'description',
                 'location',
                 'gps',
+                'storemedias',
                 'reputation',
                 'publications',
                 'visits',

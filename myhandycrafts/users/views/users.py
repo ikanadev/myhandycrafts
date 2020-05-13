@@ -32,6 +32,7 @@ from myhandycrafts.users.serializers import (
     ProfileContactSerializer,
     UserUpdateModelSerializer,
     UserShortDetailSerializer,
+    UserDetailModelSerializer
 )
 
 # Pagination
@@ -55,9 +56,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
     Handle sing up, log in, and account verification.
     """
 
-    queryset = User.objects.filter(active=True)
-    # serializer_class = UserModelSerializer
-    # lookup_field = 'username'
+    queryset = User.objects.filter(active=True,is_staff=False)
     pagination_class = MyHandycraftsPageNumberPagination
 
     filter_backends = (
@@ -75,9 +74,9 @@ class UserViewSet(mixins.RetrieveModelMixin,
         """Assing permission based on actions."""
         if self.action in ['login', 'recovery','profilepublic','shortdetail',]:
             permissions = [AllowAny]
-        elif self.action in ['register','update','destroy','list']:
+        elif self.action in ['register','update','destroy','list',]:
             permissions = [IsAuthenticated, IsAdmin]
-        elif self.action in ['profilepicture','retrieve','contact','updatepassword']:
+        elif self.action in ['profilepicture','retrieve','contact','updatepassword','details']:
             permissions = [IsAuthenticated, IsAdminorIsOwner]
         else:
             permissions = [IsAuthenticated]
@@ -91,6 +90,8 @@ class UserViewSet(mixins.RetrieveModelMixin,
             return UserShortDetailSerializer
         if self.action == 'update':
             return UserUpdateModelSerializer
+        if self.action in ['details','list']:
+            return UserDetailModelSerializer
         return UserModelSerializer
 
     def get_serializer_context(self):
@@ -230,4 +231,11 @@ class UserViewSet(mixins.RetrieveModelMixin,
         instance.deleted_at = datetime.now()
         instance.deleted_by = self.request.user.pk
         instance.save()
+
+
+    @action(detail=True, methods=['get'])
+    def details(self, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 

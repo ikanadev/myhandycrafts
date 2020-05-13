@@ -26,7 +26,8 @@ from myhandycrafts.users.models import User, Profile, UserTemporalPassword
 # Serializer
 from myhandycrafts.users.serializers.profiles import (
 ProfileModelSerializer,
-ProfilePublicModelSerializer
+ProfilePublicModelSerializer,
+ProfileDetailModelSerializer
 )
 # Utilities
 from myhandycrafts.utils.token import get_response_token
@@ -414,4 +415,23 @@ class UserShortDetailSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'picture',
+        )
+
+
+
+class UserDetailModelSerializer(serializers.ModelSerializer):
+    """User model serializer."""
+
+    profile = ProfileDetailModelSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'profile',
+            'is_staff',
         )

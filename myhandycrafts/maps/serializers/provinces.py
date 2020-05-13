@@ -41,6 +41,19 @@ class ProvinceModelSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Invalid departament")
         return data
 
+class ProvinceDetailModelSerializer(serializers.ModelSerializer):
+    """Province model serializer."""
+
+    departament=DepartamentListSerializer(many=False)
+
+    class Meta:
+        model = Province
+        fields = (
+            'id',
+            'departament',
+            'name',
+            'description',
+        )
 
 class ProvinceListSerializer(serializers.ModelSerializer):
     """Province model serializer."""

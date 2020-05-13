@@ -2,6 +2,8 @@
 
 # Django REST Framework
 from rest_framework import mixins,viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # Permisions
 from rest_framework.permissions import IsAdminUser,IsAuthenticated,AllowAny
@@ -46,6 +48,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
 
     queryset = Category.objects.filter(active=True)
 
+
     def get_permissions(self):
         """Assing permision base on action."""
         permissions = []
@@ -55,11 +58,13 @@ class CategoryViewSet(mixins.CreateModelMixin,
             permissions.append(AllowAny)
         return [permission() for permission in permissions]
 
+
     def perform_destroy(self, instance):
         instance.active=False
         instance.deleted_at = timezone.now()
         instance.save()
         """assing polices"""
+
 
 
 class CategoryListViewSet(mixins.ListModelMixin,

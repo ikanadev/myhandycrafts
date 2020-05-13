@@ -1,3 +1,3 @@
-from .fairs import FairModelSerializer,FairCreateUpdateSeralizer
-from .fairmedias import FairMediaModelSerializer
-from .participants import ParticipantModelSerializer
+from .fairs import *
+from .fairmedias import *
+from .participants import *

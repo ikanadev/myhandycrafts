@@ -7,6 +7,12 @@ from rest_framework.validators import UniqueValidator
 # Model
 from myhandycrafts.maps.models import Municipality,Province
 
+# serializer
+from myhandycrafts.maps.serializers import (
+    DepartamentListSerializer,
+    ProvinceListSerializer,
+)
+
 
 class MunicipalityModelSerializer(serializers.ModelSerializer):
     """Municipality model serializer."""
@@ -65,6 +71,22 @@ class MunicipalityModelSerializer(serializers.ModelSerializer):
         instance.departament = departament
         instance.province = province
         return super(MunicipalityModelSerializer,self).update(instance,data)
+
+
+class MunicipalityDetailModelSerializer(serializers.ModelSerializer):
+    """Municipality model serializer."""
+    departament = DepartamentListSerializer(many=False)
+    province = ProvinceListSerializer(many=False)
+    class Meta:
+        model = Municipality
+        fields = (
+            'id',
+            'departament',
+            'province',
+            'name',
+            'description',
+        )
+
 
 
 class MunicipalityListSerializer(serializers.ModelSerializer):

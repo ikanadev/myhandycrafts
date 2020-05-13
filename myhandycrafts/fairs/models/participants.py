@@ -36,6 +36,8 @@ class Participant(MyHandycraftsModel):
                              verbose_name='status_participant_choices',
                              default='PP')
 
+
+
     def __str__(self):
         """Return name of user and fair"""
         return "{} at fair: {}".format(

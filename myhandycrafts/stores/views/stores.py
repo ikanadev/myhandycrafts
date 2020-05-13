@@ -14,7 +14,7 @@ from rest_framework.filters import SearchFilter,OrderingFilter
 # Serializers
 from myhandycrafts.stores.serializers import (
     StoreModelSerializer,
-    StoreDetailSerializer,
+    StoreDetailModelSerializer,
 )
 
 # Models
@@ -37,8 +37,9 @@ class StoreViewSet(viewsets.ModelViewSet):
                        'reputation',
                        'publications',
                        'visits',
+                       'created_at',
                        )
-    ordering = ('name','updated_at')
+    ordering = ('created_at',)
     filter_fields = ('user','municipality')
     queryset =  Store.objects.filter(active=True)
     pagination_class = MyHandycraftsPageNumberPagination
@@ -54,17 +55,27 @@ class StoreViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         return {'user':self.request.user}
 
+    def get_serializer_class(self):
+        if self.action in ['list','details']:
+            return StoreDetailModelSerializer
+        return StoreModelSerializer
+
+    def get_queryset(self):
+        user  = self.request.user
+        if user.is_staff:
+            return Store.objects.filter(active=True)
+        return Store.objects.filter(active=True,user=user)
+
     def perform_destroy(self, instance):
         instance.active = False
         instance.deleted_at = timezone.now()
         instance.save()
         """add policies when object is deleted"""
 
-
     @action(detail=True, methods=['get'])
-    def details(self, request, *args, **kwargs):
+    def details(self, *args, **kwargs):
         instance = self.get_object()
-        serializer = StoreDetailSerializer(instance)
+        serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
 
@@ -73,7 +84,7 @@ class StoreFeedViewSet(mixins.ListModelMixin,
                        viewsets.GenericViewSet,
                        ):
 
-    serializer_class = StoreDetailSerializer
+    serializer_class = StoreDetailModelSerializer
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('name', 'description','location')
     ordering_fields = ('name',
