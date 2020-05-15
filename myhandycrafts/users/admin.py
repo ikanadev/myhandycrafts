@@ -6,16 +6,50 @@
 # Django
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 # Models
 from myhandycrafts.users.models import User, Profile
 
 
+
 class CustomUserAdmin(UserAdmin):
     """User model admin."""
+    # fields = ('email',
+    #           'username',
+    #           'first_name',
+    #           'last_name',
+    #           'is_staff',
+    #           'active',
+    #           'is_active',
+    #           )
+    list_display = ('email',
+                    'username',
+                    'first_name',
+                    'last_name',
+                    'is_staff',
+                    'active',
+                    'is_active',
+                    )
+    # list_filter = ('is_staff','active')
 
-    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff','active','is_active',)
-    list_filter = ('type_user', 'is_staff')
+
+    # change_user_password_template = None
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+
+        (_('Audit info'), {'fields': ('active', )}),
+    )
+    # add_fieldsets = (
+    #     (None, {
+    #         'classes': ('wide',),
+    #         'fields': ('username', 'password1', 'password2'),
+    #     }),
+    # )
+
 
 
 @admin.register(Profile)

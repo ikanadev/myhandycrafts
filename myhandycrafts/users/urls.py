@@ -23,7 +23,10 @@ from rest_framework.routers import DefaultRouter
 from .views import users as user_views
 
 router = DefaultRouter()
-router.register(r'users', user_views.UserViewSet, basename='users')
+router.register(r'a/users', user_views.UserAdminViewSet, basename='admin/users')
+router.register(r'a/users_list', user_views.UserListAdminViewSet, basename='admin/users_list')
+router.register(r'u/users', user_views.UserUserViewSet, basename='user/users')
+router.register(r'users', user_views.UserClientViewSet, basename='client/users')
 
 urlpatterns = [
     path('', include(router.urls)),

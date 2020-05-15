@@ -421,9 +421,7 @@ class UserShortDetailSerializer(serializers.ModelSerializer):
 
 class UserDetailModelSerializer(serializers.ModelSerializer):
     """User model serializer."""
-
     profile = ProfileDetailModelSerializer(read_only=True)
-
     class Meta:
         model = User
         fields = (
@@ -434,4 +432,18 @@ class UserDetailModelSerializer(serializers.ModelSerializer):
             'email',
             'profile',
             'is_staff',
+        )
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    """User list serializer."""
+    class Meta:
+        """class meta."""
+        model = User
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
         )

@@ -73,7 +73,7 @@ class StoreViewSet(viewsets.ModelViewSet):
         """add policies when object is deleted"""
 
     @action(detail=True, methods=['get'])
-    def details(self, *args, **kwargs):
+    def details(self,request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

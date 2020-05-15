@@ -7,7 +7,7 @@ from rest_framework import serializers
 from myhandycrafts.users.models import Profile
 
 # Serializer
-from myhandycrafts.categories.serializers import CategoryModelSerializer
+from myhandycrafts.categories.serializers import CategoryListSerializer
 
 
 class ProfileModelSerializer(serializers.ModelSerializer):
@@ -49,10 +49,7 @@ class ProfileModelSerializer(serializers.ModelSerializer):
 class ProfileDetailModelSerializer(serializers.ModelSerializer):
     """Profile Model serializer."""
 
-    category = serializers.SerializerMethodField()
-
-    def get_category(self, profile):
-        return profile.category.name
+    category = CategoryListSerializer(many=False)
 
     class Meta:
         model = Profile
@@ -80,11 +77,7 @@ class ProfileDetailModelSerializer(serializers.ModelSerializer):
 
 class ProfilePublicModelSerializer(serializers.ModelSerializer):
     """Profile Model serializer."""
-    category = serializers.SerializerMethodField()
-
-    def get_category(self,profile):
-        return profile.category.name
-
+    category = CategoryListSerializer(many=False)
     class Meta:
         model = Profile
         fields = (

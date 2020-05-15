@@ -63,8 +63,7 @@ class MunicipalityViewSet(mixins.CreateModelMixin,
 
     def get_serializer_context(self):
         return {
-                'user':self.request.user,
-                'fair':self.fair
+                'user':self.request.user
                 }
 
     def get_permissions(self):
