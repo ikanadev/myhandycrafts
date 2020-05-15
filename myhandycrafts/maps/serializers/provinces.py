@@ -10,6 +10,9 @@ from myhandycrafts.maps.models import Province
 # serializer
 from myhandycrafts.maps.serializers import DepartamentListSerializer
 
+#utils
+from django.utils.translation import ugettext_lazy as _
+
 
 
 
@@ -18,12 +21,7 @@ from myhandycrafts.maps.serializers import DepartamentListSerializer
 class ProvinceModelSerializer(serializers.ModelSerializer):
     """Province model serializer."""
     name = serializers.CharField(min_length=2,
-                                 max_length=32,
-                                 validators=[UniqueValidator(
-                                     queryset=Province.objects.filter(
-                                         active=True
-                                     )
-                                 )]
+                                 max_length=32
                                  )
 
     class Meta:
@@ -34,6 +32,16 @@ class ProvinceModelSerializer(serializers.ModelSerializer):
             'name',
             'description',
         )
+
+    def validate_name(self,data):
+        qs = Province.objects.filter(active=True)
+        if self.instance is not None:
+            if qs.filter(name=data).exclude(pk=self.instance.pk).exists():
+                raise serializers.ValidationError(_("Name departament already exists"))
+        else:
+            if qs.filter(name=data).exists():
+                raise serializers.ValidationError(_("Name departament already exists"))
+        return data
 
     def validate_departament(self,data):
         """validate valid departament"""

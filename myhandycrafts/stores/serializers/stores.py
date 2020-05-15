@@ -43,22 +43,11 @@ class StoreModelSerializer(serializers.ModelSerializer):
             'updated_at',
         )
 
-
-
-    def validate(self,data):
+    def validate_user(self,data):
         user = self.context['user']
         if not user.is_staff:
-            if user != data['user']:
-                raise serializers.ValidationError('You dont have permision for this action')
+            return user
         return data
-
-    def update(self, instance, data):
-        user = self.context['user']
-        if not user.is_staff:
-            if user != instance.user:
-             raise serializers.ValidationError(_("You dont have permision for this action"))
-
-        return super(StoreModelSerializer, self).update(instance, data)
 
 
 class StoreDetailModelSerializer(serializers.ModelSerializer):

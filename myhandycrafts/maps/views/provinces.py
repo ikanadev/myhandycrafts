@@ -1,9 +1,10 @@
 """Provinces views."""
 
 # Django REST Framework
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
 # Permissions
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 
@@ -16,7 +17,7 @@ from myhandycrafts.maps.serializers import (
 )
 
 # models
-from myhandycrafts.maps.models import Province,Municipality
+from myhandycrafts.maps.models import Departament,Province,Municipality
 
 
 # Django Util
@@ -26,50 +27,64 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 # from rest_framework import filters
 from myhandycrafts.utils.pagination import MyHandycraftsPageNumberPagination
 
-class ProvinceViewSet(mixins.CreateModelMixin,
+
+class ProvinceAdminViewSet(mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,
                          mixins.UpdateModelMixin,
                          mixins.DestroyModelMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):
     """Province view set."""
-
-    # serializer_class = ProvinceModelSerializer
     filter_backends = (
         SearchFilter,
         OrderingFilter,
         # filters.DjangoFilterBackend
     )
     search_fields = ('name',)
-    ordering_fields = ('name',)
+    ordering_fields = ('name','departament','created_at')
     ordering = ('name',)
     pagination_class = MyHandycraftsPageNumberPagination
-
-
-
-
-    # filter_fields = ['departament']
-    # permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAuthenticated,IsAdminUser]
 
     def get_queryset(self):
         queryset = Province.objects.filter(active=True)
         if 'departament' in self.request.GET:
-            return queryset.filter(departament_id=self.request.GET.get('departament'))
+            try:
+                departament_id = int(self.request.GET.get('departament'))
+                departament = Departament.objects.get(pk=departament_id,active=True)
+                queryset = queryset.filter(departament=departament)
+            except (ValueError,Departament.DoesNotExist):
+                queryset=[]
         return queryset
 
-    def get_permissions(self):
-        """Assing permision base on action."""
-        permissions = []
-        if self.action in ['create', 'update', 'destroy']:
-            permissions.append(IsAdminUser)
-        else:
-            permissions.append(AllowAny)
-        return [permission() for permission in permissions]
-
     def get_serializer_class(self):
-        if self.action in ['list','details']:
+        if self.action in ['list','retrieve']:
             return ProvinceDetailModelSerializer
         return ProvinceModelSerializer
+
+    def create(self, request, *args, **kwargs):
+        """create province"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        data = ProvinceDetailModelSerializer(instance).data
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+    def update(self, request, *args, **kwargs):
+        """update province"""
+        instance  = self.get_object()
+        serializer = self.get_serializer(instance,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = ProvinceDetailModelSerializer(instance).data
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(data, status=status.HTTP_200_OK)
 
     def perform_destroy(self, instance):
         instance.active=False
@@ -83,19 +98,59 @@ class ProvinceViewSet(mixins.CreateModelMixin,
                                             deleted_at=timezone.now()
                                         )
 
-    @action(detail=True, methods=['get'])
-    def details(self, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
 
 
-class ProvinceListViewSet(mixins.ListModelMixin,
-                          viewsets.GenericViewSet):
-    serializer_class = ProvinceListSerializer
-    filter_backends = (SearchFilter, OrderingFilter)
+
+class ProvinceViewSet(   mixins.RetrieveModelMixin,
+                         mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
+    """Province view set."""
+    filter_backends = (
+        SearchFilter,
+        OrderingFilter,
+        # filters.DjangoFilterBackend
+    )
     search_fields = ('name',)
-    ordering_fields = ('name','created_at', )
-    queryset = Province.objects.filter(active=True)
+    ordering_fields = ('name','departament','created_at')
+    ordering = ('name',)
+    serializer_class = ProvinceDetailModelSerializer
+
+    def get_queryset(self):
+        queryset = Province.objects.filter(active=True)
+        if 'departament' in self.request.GET:
+            try:
+                departament_id = int(self.request.GET.get('departament'))
+                departament = Departament.objects.get(pk=departament_id, active=True)
+                queryset = queryset.filter(departament=departament)
+            except (ValueError, Departament.DoesNotExist):
+                queryset =[]
+        return queryset
+
+
+
+class ProvinceListViewSet(
+                         mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
+    """Province view set."""
+    filter_backends = (
+        SearchFilter,
+        OrderingFilter,
+        # filters.DjangoFilterBackend
+    )
+    search_fields = ('name',)
+    ordering_fields = ('name','departament','created_at')
+    ordering = ('name',)
+    serializer_class = ProvinceListSerializer
+
+    def get_queryset(self):
+        queryset = Province.objects.filter(active=True)
+        if 'departament' in self.request.GET:
+            try:
+                departament_id = int(self.request.GET.get('departament'))
+                departament = Departament.objects.get(pk=departament_id, active=True)
+                queryset = queryset.filter(departament=departament)
+            except (ValueError, Departament.DoesNotExist):
+                queryset =[]
+        return queryset
 
 

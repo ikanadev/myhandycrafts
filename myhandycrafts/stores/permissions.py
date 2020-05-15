@@ -13,9 +13,9 @@ class IsAdminorIsOwnerObject(BasePermission):
         return request.user.is_staff or obj.user==request.user
 
 
-class IsAdminorIsOwnerStoreMedia(BasePermission):
+class IsOwnerStoreMedia(BasePermission):
     """Allow access only to objects owned by the requesting user."""
 
     def has_object_permission(self, request, view,obj):
         """Check obj and user are the same."""
-        return request.user.is_staff or obj.store.user==request.user
+        return  obj.store.user==request.user
