@@ -1,2 +1,2 @@
 from .postmedias import PostMediaViewSet
-from .posts import PostViewSet
+from .posts import PostViewSet,PostAdminViewSet,PostUserViewSet

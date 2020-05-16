@@ -29,6 +29,12 @@ class PostModelSerializer(serializers.ModelSerializer):
             'updated_at',
         )
 
+    def validate_user(self,data):
+        user = self.context['user']
+        if not user.is_staff:
+            return user
+        return data
+
 class PostDetailModelSerializer(serializers.ModelSerializer):
     """Post Model Serializer."""
     user = UserShortDetailSerializer(many=False)

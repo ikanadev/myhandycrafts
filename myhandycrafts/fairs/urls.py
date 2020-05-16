@@ -6,6 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 # Views
 from .views import (
+    FairAdminViewSet,
     FairViewSet,
     FairFeedViewSet,
     FairMediaViewSet,
@@ -14,8 +15,10 @@ from .views import (
 )
 
 router = DefaultRouter()
+
+router.register(r'a/fairs', FairAdminViewSet, basename='fairs')
 router.register(r'fairs', FairViewSet, basename='fairs')
-router.register(r'fairs/(?P<fair_id>[0-9]+)/participantadmin',
+router.register(r'a/fairs/(?P<fair_id>[0-9]+)/participant',
     ParticipantAdminViewSet,
     basename='participantadmin'
 )

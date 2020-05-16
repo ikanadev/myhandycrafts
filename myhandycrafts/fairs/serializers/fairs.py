@@ -34,6 +34,9 @@ class FairModelSerializer(serializers.ModelSerializer):
             'visits',
         )
 
+    def validate_user(self,data):
+        return self.context['user']
+
 
 class FairDetailModelSerializer(serializers.ModelSerializer):
     """Fair Model Serializer."""
