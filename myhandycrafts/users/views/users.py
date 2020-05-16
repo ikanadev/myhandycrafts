@@ -405,7 +405,7 @@ class UserClientViewSet(mixins.RetrieveModelMixin,
         data = {
             'state':1,
             'data':{
-                'user': UserModelSerializer(user).data,
+                'user': UserDetailModelSerializer(user).data,
                 'token': token
             },
             'message':''
