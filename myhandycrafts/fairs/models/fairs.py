@@ -10,6 +10,8 @@ from myhandycrafts.utils.image_helper import ImageHelper
 # models
 from myhandycrafts.users.models import User
 
+# postgres
+from django.contrib.postgres.fields import JSONField
 
 class Fair(MyHandycraftsModel):
     """Fair model.
@@ -37,7 +39,7 @@ class Fair(MyHandycraftsModel):
     description = models.TextField(blank=True,max_length=1024)
 
     location = models.TextField(max_length=512)
-    gps = models.CharField(max_length=10)
+    gps = JSONField(null=True)
     date_init = models.DateField()
     date_end = models.DateField()
     time_init = models.TimeField(null=True)

@@ -11,8 +11,15 @@ from myhandycrafts.users.serializers import UserShortDetailSerializer
 from myhandycrafts.maps.serializers import MunicipalityListSerializer
 from myhandycrafts.fairs.serializers.fairmedias import FairMediaModelSerializer
 
+class GPSSerializer(serializers.Serializer):
+    """Gps Serializer"""
+    latitude=serializers.CharField()
+    longitude=serializers.CharField()
+
+
 class FairModelSerializer(serializers.ModelSerializer):
     """Fair Model Serializer."""
+    gps = GPSSerializer(many=False,allow_null=True)
     class Meta:
         model = Fair
         fields = (
@@ -34,8 +41,7 @@ class FairModelSerializer(serializers.ModelSerializer):
             'visits',
         )
 
-    def validate_user(self,data):
-        return self.context['user']
+
 
 
 class FairDetailModelSerializer(serializers.ModelSerializer):
@@ -43,6 +49,7 @@ class FairDetailModelSerializer(serializers.ModelSerializer):
 
     user = UserShortDetailSerializer(many=False)
     municipality = MunicipalityListSerializer(many=False)
+    gps = GPSSerializer(many=False)
     class Meta:
         model = Fair
         fields = (
@@ -64,31 +71,6 @@ class FairDetailModelSerializer(serializers.ModelSerializer):
             'visits',
         )
 
-
-class FairCreateUpdateSerializer(serializers.Serializer):
-    """Fair Create Serializer.
-    Only admin can create, update, and delete fair
-    """
-    class Meta:
-        model = Fair
-        fields = (
-            'id',
-            'user',
-            'municipality',
-            'name',
-            'description',
-            'location',
-            'gps',
-            'date_init',
-            'date_end',
-            'time_init',
-            'time_end',
-            'is_limited',
-            'participant_limit',
-            'reputation',
-            'publications',
-            'visits',
-        )
 
 
 class FairFeedModelSerializer(serializers.ModelSerializer):

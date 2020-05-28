@@ -62,6 +62,7 @@ class FairAdminViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """create province"""
+        request.data['user']=self.request.user.pk
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()

@@ -16,8 +16,17 @@ from myhandycrafts.maps.serializers import MunicipalityListSerializer
 from myhandycrafts.stores.serializers.storemedias import StoreMediaModelSerializer
 
 
+
+class GPSSerializer(serializers.Serializer):
+    """Gps Serializer"""
+    latitude=serializers.CharField()
+    longitude=serializers.CharField()
+
+
+
 class StoreModelSerializer(serializers.ModelSerializer):
     """Store model serializer"""
+    gps = GPSSerializer(many=False,allow_null=True)
 
     class Meta:
         model = Store
@@ -54,6 +63,7 @@ class StoreDetailModelSerializer(serializers.ModelSerializer):
     user = UserShortDetailSerializer(many=False)
     municipality = MunicipalityListSerializer(many=False)
     storemedias = StoreMediaModelSerializer(many=True)
+    gps = GPSSerializer(many=False)
 
     class Meta:
         model = Store

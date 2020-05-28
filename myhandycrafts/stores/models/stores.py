@@ -6,6 +6,8 @@ from django.db import models
 # Utils
 from myhandycrafts.utils.models import MyHandycraftsModel
 
+# Postgress
+from django.contrib.postgres.fields import JSONField
 
 
 class Store(MyHandycraftsModel):
@@ -34,7 +36,7 @@ class Store(MyHandycraftsModel):
     description = models.TextField(blank=True,max_length=1024)
 
     location = models.TextField(max_length=512)
-    gps = models.CharField(max_length=10)
+    gps = JSONField(null=True)
 
     # stats
     reputation = models.FloatField(
