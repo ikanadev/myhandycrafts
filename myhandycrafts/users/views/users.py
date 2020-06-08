@@ -70,7 +70,7 @@ class UserAdminViewSet(mixins.RetrieveModelMixin,
                      'username',
                      'first_name',
                      'last_name',
-                     'profile__address',
+                     'profile__ci',
                      )
     ordering_fields = ('email',
                      'username',
@@ -202,7 +202,7 @@ class UserListAdminViewSet(mixins.ListModelMixin,
                      'username',
                      'first_name',
                      'last_name',
-                     'profile__address',
+                     'profile__ci',
                      )
     ordering_fields = ('email',
                      'username',
@@ -296,7 +296,6 @@ class UserUserViewSet(mixins.RetrieveModelMixin,
             'state': 1,
             'data': '',
             'message': 'Password has been updated'
-
         }
         return Response(data, status=status.HTTP_200_OK)
 
@@ -371,7 +370,7 @@ class UserClientViewSet(mixins.RetrieveModelMixin,
                      'username',
                      'first_name',
                      'last_name',
-                     # 'profile__address',
+                     'profile__ci',
                      )
     ordering_fields = ('email',
                        'username',
