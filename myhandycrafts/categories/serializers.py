@@ -35,7 +35,7 @@ class CategoryModelSerializer(serializers.ModelSerializer):
             'description',
             'image',
             'count_post',
-            'count_craftman',gi
+            'count_craftman',
         )
 
         only_read_fields = (
