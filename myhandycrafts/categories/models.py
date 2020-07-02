@@ -39,9 +39,9 @@ class Category(MyHandycraftsModel):
         return self.name
 
 
-    # def sapwdve(self, *args, **kwargs):
-    #     """ save image on three size."""
-    #     imagesave = ImageHelper()
-    #     if str(self.image) is not '':
-    #         self.image = imagesave.compressImage(self.image, 1080, 1080, 50)
-    #     super(Category, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        """ save image on three size."""
+        imagesave = ImageHelper()
+        if str(self.image) is not '':
+            self.image = imagesave.compressImage(self.image, 1080, 1080, 50)
+        super(Category, self).save(*args, **kwargs)
