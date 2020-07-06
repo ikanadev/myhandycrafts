@@ -142,7 +142,7 @@ class UserTemporalPasswordSendSerializer(serializers.Serializer):
             user.last_name
         )
         # from_email = 'My HandyCrafts <noreply@mg.cheapdinamic.xyz>'
-        from_email = 'no-reply@mg.cheapdinamic.xyz'
+        from_email = 'no-reply@m.cheapdinamic.xyz'
         content = render_to_string(
             'email/user_temporal_password.html',
             {'password': password_temporal, 'user': user}
