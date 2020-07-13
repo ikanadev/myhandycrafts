@@ -13,8 +13,8 @@ def update_site_forward(apps, schema_editor):
     Site.objects.update_or_create(
         id=settings.SITE_ID,
         defaults={
-            "domain": "api.cheapdinamic.xyz",
-            "name": "MyHandyCrafts",
+            "domain": "api.myhandicrafts.xyz",
+            "name": "MyHandiCrafts",
         },
     )
 
@@ -23,7 +23,7 @@ def update_site_backward(apps, schema_editor):
     """Revert site domain and name to default."""
     Site = apps.get_model("sites", "Site")
     Site.objects.update_or_create(
-        id=settings.SITE_ID, defaults={"domain": "api.cheapdinamic.xyz", "name": "api.cheapdinamic.xyz"}
+        id=settings.SITE_ID, defaults={"domain": "api.myhandicrafts.xyz", "name": "api.myhandicrafts.xyz"}
     )
 
 
