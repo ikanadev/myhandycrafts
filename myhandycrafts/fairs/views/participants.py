@@ -20,7 +20,6 @@ from myhandycrafts.fairs.serializers import (
     ParticipantDetailModelSerializer,
     AddParticipantSerializer,
     UpdateAdminParticipantSerializer,
-
     JoinParticipantSerializer,
     UpdateParticipantSerializer,
     DeclineParticipantSerializer,
