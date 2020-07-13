@@ -35,7 +35,7 @@ http:
       service: django
 
     web-secure-router:
-      rule: "Host(`api.cheapdinamic.xyz`)"
+      rule: "Host(`api.myhandicrafts.xyz`)"
       entryPoints:
         - web-secure
       middlewares:
