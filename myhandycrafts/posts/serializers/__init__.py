@@ -1,5 +1,6 @@
 from .posts import PostModelSerializer
 from .posts import PostDetailModelSerializer
+from .posts import PostDetailCompleteModelSerializer
 from .postmedias import PostMediaModelSerializer
 from .fairposts import FairPostModelSerializer
 from .fairposts import FairPostDetailModelSerializer

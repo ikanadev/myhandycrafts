@@ -7,7 +7,7 @@ from rest_framework import serializers
 from myhandycrafts.posts.models import Post
 
 # serializer
-from myhandycrafts.users.serializers import UserShortDetailSerializer
+from myhandycrafts.users.serializers import UserShortDetailSerializer,UserProfilePublicSerializer
 from myhandycrafts.categories.serializers import CategoryListSerializer
 from .postmedias import PostMediaModelSerializer
 
@@ -38,6 +38,29 @@ class PostModelSerializer(serializers.ModelSerializer):
 class PostDetailModelSerializer(serializers.ModelSerializer):
     """Post Model Serializer."""
     user = UserShortDetailSerializer(many=False)
+    category = CategoryListSerializer(many=False)
+    postmedias = PostMediaModelSerializer(many=True)
+
+    class Meta:
+        model = Post
+        fields = (
+            'id',
+            'user',
+            'title',
+            'category',
+            'description',
+            'price',
+            'quantity',
+            'state',
+            'postmedias',
+            'created_at',
+            'updated_at',
+        )
+
+
+class PostDetailCompleteModelSerializer(serializers.ModelSerializer):
+    """Post Model Serializer."""
+    user = UserProfilePublicSerializer(many=False)
     category = CategoryListSerializer(many=False)
     postmedias = PostMediaModelSerializer(many=True)
 

@@ -13,6 +13,7 @@ from rest_framework.filters import SearchFilter,OrderingFilter
 from myhandycrafts.posts.serializers import (
     PostModelSerializer,
     PostDetailModelSerializer,
+    PostDetailCompleteModelSerializer
 )
 
 # Models
@@ -172,6 +173,11 @@ class PostViewSet(mixins.RetrieveModelMixin,
                        )
     ordering = ('title','updated_at')
     pagination_class = MyHandycraftsPageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ['retrieve']:
+            return PostDetailCompleteModelSerializer
+        return PostDetailModelSerializer
 
     def get_queryset(self):
 

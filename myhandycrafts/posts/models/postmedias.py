@@ -39,7 +39,7 @@ class PostMedia(MyHandycraftsModel):
         """ save image on three size."""
         imagesave = ImageHelper()
         if self.pk is None:
-            self.img_huge = imagesave.compressImage(self.img_huge, 1280, 1280, 65)
+            self.img_huge = imagesave.compressImage(self.img_huge, 1280, 1280, 50)
             self.img_standar = imagesave.compressImage(self.img_huge, 1080, 1080, 50)
             self.img_small = imagesave.compressImage(self.img_huge, 650, 650, 50)
             self.img_thumbnail = imagesave.compressImage(self.img_huge, 100, 100, 50)
