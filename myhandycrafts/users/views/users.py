@@ -123,8 +123,8 @@ class UserAdminViewSet(mixins.RetrieveModelMixin,
         data =  UserDetailModelSerializer(user).data
         return Response(data, status=status.HTTP_201_CREATED)
 
-    # def update(self, request, *args, **kwargs):
-    #     """UPDATE USER"""
+    def update(self, request, *args, **kwargs):
+        """UPDATE USER"""
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = UserUpdateModelSerializer(instance,
