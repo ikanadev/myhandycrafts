@@ -168,7 +168,6 @@ class UserAdminViewSet(mixins.RetrieveModelMixin,
             'state': 1,
             'data': '',
             'message': 'Password has been updated'
-
         }
         return Response(data, status=status.HTTP_200_OK)
 
